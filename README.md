@@ -47,11 +47,11 @@ The following design will cover the main ideas and code functionality. This desi
 
 The code is separated into three threads. The main thread, Camera thread, and Data thread. For the first code implementation, the idea is only to have one camera, but in the future, the idea is to have one thread per camera.
 
-<img src="d1.png" width="600" height="800" />
+<img src="d1.png" width="700" height="800" />
 
 The main thread will support the user interface. This user interface will be done using the wxWidgets library [link](https://www.wxwidgets.org/). The user   can control the following information:
 
-<img src="d2.png" width="600" height="800" />
+<img src="d2.png" width="700" height="800" />
 
 The camera thread will perform the capture action and percentage calculation using the OpenCV library functionalities [link](https://opencv.org/). A promise and future are used to pass the data to the main thread.
 To process the image the idea is to filter by the plate color and then calculate how many pixels are white and how many black. For future implementation, the idea is to cover different plates and different colors
@@ -61,7 +61,7 @@ The data thread is blocked until receiving new data to store in the database. Th
 
 The code will have the following classes where will be covering most part of the information and actions.
 
-<img src="d3.png" width="600" height="800" />
+<img src="d3.png" width="400" height="400" />
 
 ## Testing
 The code has in the test folder images to check the code operations. The first version only uses this image, not support the live camera but the tester can change this image and check results.
