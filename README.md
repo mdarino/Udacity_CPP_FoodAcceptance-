@@ -6,7 +6,7 @@ This repo contains My C++ Capstone Project project for the Object Oriented Progr
 The food acceptance project is created to control how many foods are accepted or are not acceptable in food preparation. It is focused mainly on places where we can find one plate for the day, for example in my country (Argentina) it is very common at community kitchens or companies/schools kitchens. The main idea is to avoid throwing food and get statistics of food acceptance.
 Another important motivation for this software is to find what food is not accepted and find another way to prepare this food searching in that way cover all the nutrient needed for children/adults.
 
-<img src="softwareFrontEnd.png" width="600" height="800" />
+<img src="softwareFrontEnd.jpg" width="600" height="800" />
 (The previous Image is not the final result. Design proposal)
 
 Please for more information check the below items where you can find the code design, tests, and rubric items description.
