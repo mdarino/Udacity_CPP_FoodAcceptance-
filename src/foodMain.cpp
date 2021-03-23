@@ -1,131 +1,9 @@
-#include <wx/wxprec.h>
-#ifndef WX_PRECOMP
-    #include <wx/wx.h>
-#endif
-#include <wx/button.h>
-#include <wx/checkbox.h>
-#include <wx/frame.h>
-#include <wx/radiobut.h>
-#include <wx/statline.h>
-#include <wx/stattext.h>
-#include <wx/textctrl.h>
+#include "foodMain.h"
 
-class MyApp : public wxApp
-{
-    public:
-        virtual bool OnInit();
-};
 
-class MyFrame : public wxFrame
-{
-    public:
-        MyFrame();
-        wxButton* B_csv;
-        wxButton* B_find;
-        wxButton* B_manEnter;
-        wxButton* B_process;
-        wxCheckBox* CB_log;
-        wxCheckBox* CB_saveImg;
-        wxRadioButton* rb_incoming;
-        wxRadioButton* rb_outgoing;
-        wxStaticLine* StaticLine1;
-        wxStaticLine* StaticLine2;
-        wxStaticLine* StaticLine3;
-        wxStaticLine* StaticLine4;
-        wxStaticText* StaticText10;
-        wxStaticText* StaticText15;
-        wxStaticText* StaticText16;
-        wxStaticText* StaticText17;
-        wxStaticText* StaticText18;
-        wxStaticText* StaticText19;
-        wxStaticText* StaticText1;
-        wxStaticText* StaticText20;
-        wxStaticText* StaticText21;
-        wxStaticText* StaticText2;
-        wxStaticText* StaticText3;
-        wxStaticText* StaticText4;
-        wxStaticText* StaticText5;
-        wxStaticText* StaticText6;
-        wxStaticText* StaticText7;
-        wxStaticText* StaticText8;
-        wxStaticText* StaticText9;
-        wxStaticText* st_currentDate;
-        wxStaticText* st_dayFood;
-        wxStaticText* st_dayInPorc;
-        wxStaticText* st_dayInQuantity;
-        wxStaticText* st_dayOutPorc;
-        wxStaticText* st_dayOutQuantity;
-        wxStaticText* st_reqInPorc;
-        wxStaticText* st_reqInQuantity;
-        wxStaticText* st_reqOutPorc;
-        wxStaticText* st_reqOutQuantity;
-        wxTextCtrl* T_endDate;
-        wxTextCtrl* T_manPorc;
-        wxTextCtrl* T_manQuantity;
-        wxTextCtrl* T_startDate;
-
-    protected:
-        static const long ID_ST_DAYFOOD;
-        static const long ID_ST_CURRENTDATE;
-        static const long ID_STATICTEXT2;
-        static const long ID_STATICTEXT3;
-        static const long ID_STATICLINE1;
-        static const long ID_RB_INCOMING;
-        static const long ID_RB_OUTGOING;
-        static const long ID_STATICTEXT4;
-        static const long ID_CB_SAVEIMG;
-        static const long ID_CB_LOG;
-        static const long ID_B_PROCESS;
-        static const long ID_STATICTEXT5;
-        static const long ID_T_MANQUANTITY;
-        static const long ID_STATICTEXT6;
-        static const long ID_T_MANPORC;
-        static const long ID_STATICLINE2;
-        static const long ID_STATICTEXT7;
-        static const long ID_STATICTEXT8;
-        static const long ID_STATICTEXT9;
-        static const long ID_STATICTEXT10;
-        static const long ID_STATICTEXT11;
-        static const long ID_ST_DAYINQUANTITY;
-        static const long ID_ST_DAYINPORC;
-        static const long ID_ST_DAYOUTQUANTITY;
-        static const long ID_ST_DAYOUTPORC;
-        static const long ID_STATICLINE3;
-        static const long ID_STATICTEXT16;
-        static const long ID_STATICTEXT17;
-        static const long ID_STATICTEXT18;
-        static const long ID_T_STARTDATE;
-        static const long ID_T_ENDDATE;
-        static const long ID_B_FIND;
-        static const long ID_STATICTEXT19;
-        static const long ID_STATICTEXT20;
-        static const long ID_STATICTEXT21;
-        static const long ID_STATICTEXT22;
-        static const long ID_ST_REQINQUANTITY;
-        static const long ID_ST_REQINPORC;
-        static const long ID_ST_REQOUTQUANTITY;
-        static const long ID_ST_REQOUTPORC;
-        static const long ID_B_CSV;
-        static const long ID_B_MANENTER;
-        static const long ID_STATICLINE4;
-
-    private:
-        void OnB_processClick(wxCommandEvent& event);
-        void OnCB_saveImgClick(wxCommandEvent& event);
-        void OnCB_logClick(wxCommandEvent& event);
-        void Onrb_outgoingSelect(wxCommandEvent& event);
-        void Onrb_incomingSelect(wxCommandEvent& event);
-        void OnB_manEnterClick(wxCommandEvent& event);
-        void OnT_manQuantityText(wxCommandEvent& event);
-        void OnT_manPorcText(wxCommandEvent& event);
-        void OnT_startDateText(wxCommandEvent& event);
-        void OnT_endDateText(wxCommandEvent& event);
-        void OnB_findClick(wxCommandEvent& event);
-        void OnB_csvClick(wxCommandEvent& event);
-        void OnExit(wxCommandEvent& event);
-        void OnAbout(wxCommandEvent& event);
-};
-
+// size of chatbot window
+constexpr int width = 400;
+constexpr int height = 750;
 
 const long MyFrame::ID_ST_DAYFOOD = wxNewId();
 const long MyFrame::ID_ST_CURRENTDATE = wxNewId();
@@ -172,15 +50,16 @@ const long MyFrame::ID_B_MANENTER = wxNewId();
 const long MyFrame::ID_STATICLINE4 = wxNewId();
 
 
-wxIMPLEMENT_APP(MyApp);
+wxIMPLEMENT_APP(MyApp);  /* MAIN */
 bool MyApp::OnInit()
 {
     MyFrame *frame = new MyFrame();
     frame->Show(true);
     return true;
 }
+
 MyFrame::MyFrame()
-    : wxFrame(NULL, wxID_ANY, "Hello World")
+    : wxFrame(NULL, wxID_ANY, "Food Acceptance", wxDefaultPosition, wxSize(width, height))
 {
     wxMenu *menuFile = new wxMenu;
     menuFile->AppendSeparator();
@@ -196,7 +75,6 @@ MyFrame::MyFrame()
     Bind(wxEVT_MENU, &MyFrame::OnAbout, this, wxID_ABOUT);
     Bind(wxEVT_MENU, &MyFrame::OnExit, this, wxID_EXIT);
 
-    SetClientSize(wxSize(399,660));
     st_dayFood = new wxStaticText(this, ID_ST_DAYFOOD, _("_____________________"), wxPoint(64,16), wxSize(248,17), 0, _T("ID_ST_DAYFOOD"));
     st_currentDate = new wxStaticText(this, ID_ST_CURRENTDATE, _("_____________________"), wxPoint(64,48), wxDefaultSize, 0, _T("ID_ST_CURRENTDATE"));
     StaticText1 = new wxStaticText(this, ID_STATICTEXT2, _("FOOD NAME:"), wxPoint(10,16), wxDefaultSize, 0, _T("ID_STATICTEXT2"));
@@ -206,8 +84,8 @@ MyFrame::MyFrame()
     wxFont StaticText2Font(10,wxFONTFAMILY_SWISS,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD,false,_T("Sans"),wxFONTENCODING_DEFAULT);
     StaticText2->SetFont(StaticText2Font);
     StaticLine1 = new wxStaticLine(this, ID_STATICLINE1, wxPoint(0,152), wxSize(400,-1), wxLI_HORIZONTAL, _T("ID_STATICLINE1"));
-    rb_incoming = new wxRadioButton(this, ID_RB_INCOMING, _("INCOMING"), wxPoint(24,88), wxDefaultSize, 0, wxDefaultValidator, _T("ID_RB_INCOMING"));
-    rb_outgoing = new wxRadioButton(this, ID_RB_OUTGOING, _("OUTGOING"), wxPoint(24,120), wxDefaultSize, 0, wxDefaultValidator, _T("ID_RB_OUTGOING"));
+    RB_incoming = new wxRadioButton(this, ID_RB_INCOMING, _("INCOMING"), wxPoint(24,88), wxDefaultSize, 0, wxDefaultValidator, _T("ID_RB_INCOMING"));
+    RB_outgoing = new wxRadioButton(this, ID_RB_OUTGOING, _("OUTGOING"), wxPoint(24,120), wxDefaultSize, 0, wxDefaultValidator, _T("ID_RB_OUTGOING"));
     StaticText3 = new wxStaticText(this, ID_STATICTEXT4, _("MANUAL CONTROL"), wxPoint(10,160), wxSize(112,17), 0, _T("ID_STATICTEXT4"));
     wxFont StaticText3Font(10,wxFONTFAMILY_SWISS,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD,false,_T("Sans"),wxFONTENCODING_DEFAULT);
     StaticText3->SetFont(StaticText3Font);
@@ -218,7 +96,7 @@ MyFrame::MyFrame()
     B_process = new wxButton(this, ID_B_PROCESS, _("PROCESS"), wxPoint(288,112), wxDefaultSize, 0, wxDefaultValidator, _T("ID_B_PROCESS"));
     StaticText4 = new wxStaticText(this, ID_STATICTEXT5, _("QUANTITY"), wxPoint(16,192), wxDefaultSize, 0, _T("ID_STATICTEXT5"));
     T_manQuantity = new wxTextCtrl(this, ID_T_MANQUANTITY, _("0"), wxPoint(104,184), wxDefaultSize, 0, wxDefaultValidator, _T("ID_T_MANQUANTITY"));
-    StaticText5 = new wxStaticText(this, ID_STATICTEXT6, _("%"), wxPoint(200,192), wxDefaultSize, 0, _T("ID_STATICTEXT6"));
+    StaticText5 = new wxStaticText(this, ID_STATICTEXT6, _("%"), wxPoint(202,192), wxDefaultSize, 0, _T("ID_STATICTEXT6"));
     T_manPorc = new wxTextCtrl(this, ID_T_MANPORC, _("0"), wxPoint(216,184), wxDefaultSize, 0, wxDefaultValidator, _T("ID_T_MANPORC"));
     StaticLine2 = new wxStaticLine(this, ID_STATICLINE2, wxPoint(0,232), wxSize(400,-1), wxLI_HORIZONTAL, _T("ID_STATICLINE2"));
     StaticText6 = new wxStaticText(this, ID_STATICTEXT7, _("DAY RESULTS"), wxPoint(10,240), wxSize(174,17), 0, _T("ID_STATICTEXT7"));
@@ -250,11 +128,11 @@ MyFrame::MyFrame()
     st_reqOutQuantity = new wxStaticText(this, ID_ST_REQOUTQUANTITY, _("__"), wxPoint(112,584), wxDefaultSize, 0, _T("ID_ST_REQOUTQUANTITY"));
     st_reqOutPorc = new wxStaticText(this, ID_ST_REQOUTPORC, _("__"), wxPoint(216,584), wxDefaultSize, 0, _T("ID_ST_REQOUTPORC"));
     B_csv = new wxButton(this, ID_B_CSV, _("CSV"), wxPoint(24,616), wxDefaultSize, 0, wxDefaultValidator, _T("ID_B_CSV"));
-    B_manEnter = new wxButton(this, ID_B_MANENTER, _("ENTER"), wxPoint(312,184), wxDefaultSize, 0, wxDefaultValidator, _T("ID_B_MANENTER"));
+    B_manEnter = new wxButton(this, ID_B_MANENTER, _("ENTER"), wxPoint(315,184), wxDefaultSize, 0, wxDefaultValidator, _T("ID_B_MANENTER"));
     StaticLine4 = new wxStaticLine(this, ID_STATICLINE4, wxPoint(0,656), wxSize(400,-1), wxLI_HORIZONTAL, _T("ID_STATICLINE4"));
 
-    Connect(ID_RB_INCOMING,wxEVT_COMMAND_RADIOBUTTON_SELECTED,(wxObjectEventFunction)&MyFrame::Onrb_incomingSelect);
-    Connect(ID_RB_OUTGOING,wxEVT_COMMAND_RADIOBUTTON_SELECTED,(wxObjectEventFunction)&MyFrame::Onrb_outgoingSelect);
+    Connect(ID_RB_INCOMING,wxEVT_COMMAND_RADIOBUTTON_SELECTED,(wxObjectEventFunction)&MyFrame::OnRB_incomingSelect);
+    Connect(ID_RB_OUTGOING,wxEVT_COMMAND_RADIOBUTTON_SELECTED,(wxObjectEventFunction)&MyFrame::OnRB_outgoingSelect);
     Connect(ID_CB_SAVEIMG,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&MyFrame::OnCB_saveImgClick);
     Connect(ID_CB_LOG,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&MyFrame::OnCB_logClick);
     Connect(ID_B_PROCESS,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&MyFrame::OnB_processClick);
@@ -288,11 +166,11 @@ void MyFrame::OnCB_logClick(wxCommandEvent& event)
 {
 }
 
-void MyFrame::Onrb_outgoingSelect(wxCommandEvent& event)
+void MyFrame::OnRB_outgoingSelect(wxCommandEvent& event)
 {
 }
 
-void MyFrame::Onrb_incomingSelect(wxCommandEvent& event)
+void MyFrame::OnRB_incomingSelect(wxCommandEvent& event)
 {
 }
 
