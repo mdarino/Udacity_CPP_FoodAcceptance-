@@ -1,6 +1,7 @@
 #include "selfTest.h"
 #include "debugFood.h"
 #include "foodMain.h"
+#include "plate.h"
 
 // size of chatbot window
 constexpr int width = 400;

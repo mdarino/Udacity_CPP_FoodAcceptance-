@@ -7,11 +7,23 @@
 
 #include "debugFood.h"
 #include "selfTest.h"
+#include "plate.h"
 
 /* Self test implementation */
 bool selfTest(void){
-    bool result = false;
+    bool result;
+
+    std::cout << "SELF TEST..." << std::endl;
+
     result = selfTest_debug();
+    std::cout << "--DEBUG:" << result << std::endl;
+    if (result == false) return result;
+
+    result = selfTest_plate();
+    std::cout << "--PLATE:" << result << std::endl;
+    if (result == false) return result;
+
+    result = true;
     return result;
 }
 
@@ -56,6 +68,24 @@ bool selfTest_debug(void){
     }
     else {result = false;}
 
+    return result;
+}
+
+
+/* Debug class self test implementation */
+bool selfTest_plate(void){
+    Plate myPlate("Rice With Vegetables", 78, 150);
+    
+    bool result = true;
+    if("Rice With Vegetables" != myPlate.PlateName()) result = false;
+    if(78 != myPlate.ExpPercentage()) result = false;
+    if(150 != myPlate.Nutrients_A()) result = false;
+
+    myPlate.ExpPercentage(200);
+    if(maxPercentage != myPlate.ExpPercentage()) result = false;
+    myPlate.Nutrients_A(2040);
+    if(maxNutrients != myPlate.Nutrients_A()) result = false; 
+    
     return result;
 }
 

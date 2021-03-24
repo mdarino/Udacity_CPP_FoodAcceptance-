@@ -25,4 +25,9 @@ bool selfTest(void);
 */
 bool selfTest_debug(void);
 
+/** 
+ *  @brief Self test for the plate class
+*/
+bool selfTest_plate(void);
+
 #endif
