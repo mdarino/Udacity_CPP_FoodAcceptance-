@@ -1,3 +1,10 @@
+/** 
+ *  @file   foodMain.h
+ *  @brief  Food acceptance Main header file
+ *  @author Marcos Darino
+ *  @date   2020-MAR-01
+ ***********************************************/
+
 #ifndef FOODMAIN_H
 #define FOODMAIN_H
 

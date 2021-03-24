@@ -1,3 +1,10 @@
+/** 
+ *  @file   foodMain.cpp
+ *  @brief  Food acceptance Main source code
+ *  @author Marcos Darino
+ *  @date   2020-MAR-01
+ ***********************************************/
+
 #include "selfTest.h"
 #include "debugFood.h"
 #include "foodMain.h"
