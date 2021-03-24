@@ -1,5 +1,6 @@
+#include "selfTest.h"
+#include "debugFood.h"
 #include "foodMain.h"
-
 
 // size of chatbot window
 constexpr int width = 400;
@@ -53,6 +54,14 @@ const long MyFrame::ID_STATICLINE4 = wxNewId();
 wxIMPLEMENT_APP(MyApp);  /* MAIN */
 bool MyApp::OnInit()
 {
+    
+    /* SELFTEST OF THE SYSTEM */
+    if (false == selfTest())
+    {
+        std::cout << "SELFTEST FAIL!!" << std::endl;
+        return false; /*Don't lunch the GUI */
+    }
+
     MyFrame *frame = new MyFrame();
     frame->Show(true);
     return true;
