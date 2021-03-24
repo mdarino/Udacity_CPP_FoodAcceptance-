@@ -1,5 +1,5 @@
 /** 
- *  @file   debug.h 
+ *  @file   debugFood.h 
  *  @brief  Debug Class header file
  *  @author Marcos Darino
  *  @date   2020-MAR-01
