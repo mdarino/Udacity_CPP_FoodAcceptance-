@@ -78,7 +78,8 @@ class ResultDB {
         void addOnePlate(bool inFLag);
         void addOnePercentage(bool inFLag, unsigned int percentage);
 
-        int request(std::string startDate, std::string endDate, bool inFLag, unsigned int &quantity, unsigned int &percentage);
+        int requestQuantity(std::string startDate, std::string endDate, unsigned int &in, unsigned int &out);
+        int requestPercentage(std::string startDate, std::string endDate, unsigned int &in, unsigned int &out);
         int csvFile(std::string startDate, std::string endDate);
     private:
         PlateDB _data;

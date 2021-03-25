@@ -83,16 +83,26 @@ void ResultDB::addOnePercentage(bool inFLag, unsigned int percentage){
     }
 }
 
-
 /** 
- * @brief Request the quantity and the percentage of a period of time
+ * @brief Request the quantity of a period of time (Incoming and outgoing)
  * @param startDate Start date to filter the DB
  * @param endDate End date to filter the DB
- * @param inFLag True for incoming plates, False to outgoing
- * @param quantity Reference variable to return the quantity
- * @param percentage Reference variable to return the percentage
+ * @param in Reference variable to return the incoming quantity
+ * @param out Reference variable to return the outgoing quantity
 */
-int ResultDB::request(std::string startDate, std::string endDate, bool inFLag, unsigned int &quantity, unsigned int &percentage){
+int ResultDB::requestQuantity(std::string startDate, std::string endDate, unsigned int &in, unsigned int &out){
+    //TODO//
+    return 1;
+}
+
+/** 
+ * @brief Request the percentage of a period of time (Incoming and outgoing)
+ * @param startDate Start date to filter the DB
+ * @param endDate End date to filter the DB
+ * @param in Reference variable to return the incoming percentage
+ * @param out Reference variable to return the outgoing percentage
+*/
+int ResultDB::requestPercentage(std::string startDate, std::string endDate, unsigned int &in, unsigned int &out){
     //TODO//
     return 1;
 }

@@ -36,7 +36,7 @@ void Plate::ExpPercentage(unsigned int uExpPercentage){
 }
 
 /** 
- * @brief Set the Nutrients (Vitamim A)
+ * @brief Set the Nutrients (Vitamin A)
  * @param uNutrients_A Number of milligrams.
 */
 void Plate::Nutrients_A(unsigned int uNutrients_A){
@@ -64,3 +64,10 @@ unsigned int Plate::valNutrients (unsigned int uNutrients){
       uNutrients = maxNutrients;
     return uNutrients;
 } 
+
+/** 
+ * @brief Request to the DB the plate name for the current day
+*/
+void RequestPlateName(void){
+    // TODO
+}

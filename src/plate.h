@@ -20,7 +20,7 @@ constexpr unsigned int maxNutrients = 1000; ///< Maximum number accepted on Nutr
 */
 class Plate {
     public:
-        /* Contructor */
+        /* Constructor */
         Plate(std::string uPlateName, unsigned int uExpPercentage, unsigned int uNutrients_A);
         /* Get/Set */  
         std::string PlateName(void) { return plateName;};
@@ -29,6 +29,9 @@ class Plate {
         void PlateName(std::string uPlateName);
         void ExpPercentage(unsigned int uExpPercentage);
         void Nutrients_A(unsigned int uNutrients_A);
+        /* Request to the DB the plate name for the current day */
+        void RequestPlateName(void);
+        
     private:
         std::string plateName; /* Meals name */
         unsigned int expPercentage; /* Expected result for this plate, 0 to 100 % */
