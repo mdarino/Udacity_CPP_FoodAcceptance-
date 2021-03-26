@@ -9,6 +9,8 @@
 #include "debugFood.h"
 #include "foodMain.h"
 #include "plate.h"
+#include "records.h"
+#include "camera.h"
 
 // size of chatbot window
 constexpr int width = 400;
@@ -58,17 +60,22 @@ const long MyFrame::ID_B_CSV = wxNewId();
 const long MyFrame::ID_B_MANENTER = wxNewId();
 const long MyFrame::ID_STATICLINE4 = wxNewId();
 
+Camera myInCamera("LogCamIn.txt", "../log/", true, 0, false);  /* Incoming camara */
+Camera myOutCamera("LogCamOut.txt", "../log/", true, 1, false);  /* Outgoing camara */
 
 wxIMPLEMENT_APP(MyApp);  /* MAIN */
 bool MyApp::OnInit()
 {
-    
     /* SELFTEST OF THE SYSTEM */
     if (false == selfTest())
     {
         std::cout << "SELFTEST FAIL!!" << std::endl;
         return false; /*Don't lunch the GUI */
     }
+    
+    std::srand((unsigned) time(0));
+    myInCamera.dPrintObj();
+    myOutCamera.dPrintObj();
 
     MyFrame *frame = new MyFrame();
     frame->Show(true);
@@ -173,6 +180,8 @@ void MyFrame::OnAbout(wxCommandEvent& event)
 
 void MyFrame::OnB_processClick(wxCommandEvent& event)
 {
+    SetStatusText("Process a new image!");
+    myInCamera.processImage();
 }
 
 void MyFrame::OnCB_saveImgClick(wxCommandEvent& event)

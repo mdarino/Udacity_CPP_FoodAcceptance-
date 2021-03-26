@@ -10,7 +10,18 @@
 
 #include <stdio.h>
 #include <iostream>
+#include <cstdlib>
+#include <ctime>
+#include <vector>
+
+#include <opencv2/imgcodecs.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
+
+
 #include "debugFood.h"
+
+
 
 /** 
  * @brief Camera Class contains information to process the image
@@ -19,6 +30,7 @@ class Camera : public DebugFood {
     public:
         Camera(std::string uFile, std::string uPath, bool logStatus, unsigned int u_Id, bool uSaveFlag) : 
                             DebugFood(uFile, uPath, logStatus), id(u_Id), saveFlag(uSaveFlag)  {};
+        void dPrintObj(); /* Virtual function of the debug class */
 
         unsigned int Id(void) const { return id;};
         bool SaveFlag(void) const { return id;};    
@@ -37,7 +49,9 @@ class Camera : public DebugFood {
         int const vmin = 145;  
         int const hmax = 179;
         int const smax = 45;
-        int const vmax = 255;   
+        int const vmax = 255;  
+
+        void getContours(cv::Mat imgGray, cv::Mat img); 
 
 };
 
