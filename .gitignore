@@ -5,4 +5,4 @@ settings.json
 build/*
 *.json
 *.code-workspace
-test.txt
+log/*

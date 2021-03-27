@@ -100,3 +100,20 @@ void Record::PrintFindQuantity(void){
 void Record::PrintFindPercentage(void){
     //TODO//
 }
+
+void Record::dPrintObj() {
+    if (Record::LogFlag())
+    {
+        std::ofstream debugFile;
+        debugFile.open (Path() + Filename(), std::ios::app); /* All output operations are performed at the end of the file, Append */
+        if (debugFile.is_open()) {
+            debugFile << "OBJ RECORD - isRunning: " << Record::isRunning << std::endl;
+            debugFile.close();
+        }
+        else
+        {
+            std::cout << "ERROR: Cannot open the log file" << std::endl;
+        }
+    }
+};
+

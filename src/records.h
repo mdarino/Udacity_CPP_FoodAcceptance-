@@ -12,6 +12,9 @@
 #include <stdio.h>
 #include <iostream>
 #include "debugFood.h"
+#include <vector>
+#include <future>
+#include <thread>
 
 /** Status of the find operation, if the user:
      Empty start and end date = empty 
@@ -33,9 +36,14 @@ class Record : public DebugFood {
         Record(std::string uFile, std::string uPath, bool logStatus) : 
                             DebugFood(uFile, uPath, logStatus) {};
         
+        void dPrintObj(); /* Virtual function of the debug class */
+
+        bool IsRunning(void) { return isRunning;};
+        void IsRunning(bool uIsRunning) { isRunning = uIsRunning;};
+
         void EnterManualData();
         void RunExportCsv(void);
-        void refreshScreen(int uFindStatus);        
+        void refreshScreen(int uFindStatus);
 
         bool ValEditDate(std::string uDate);
         bool ValEditQuantity(std::string uQuantity);
@@ -47,12 +55,14 @@ class Record : public DebugFood {
         void PrintFindQuantity(void);
         void PrintFindPercentage(void);
 
+        bool isRunning;
         bool inFLag;
         unsigned int userManualQuantity;
         unsigned int userManualPercentage;
         std::string userDateStart;
         std::string userDateEnd;
-        findStatus_t findStatus;      
+        findStatus_t findStatus;
+
 };
 
 

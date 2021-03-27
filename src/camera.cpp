@@ -17,50 +17,66 @@ using namespace cv;
 
 RNG rng(12345);
 
-void Camera::processImage(void){
+void Camera::processImage(std::future<void> futureObj){
 
-    int randomNumber;
-    randomNumber = (std::rand() % 20) + 1;  /* To get random images */
+    std::string outName = "";
+    std::string path = "";
 
-    std::string filename = "../test/img/" + std::to_string(randomNumber) + ".jpg";
-    Mat img = imread(filename);   /* Mat it is the matrix for the image */
-    Mat imgHR, mask, imgGray, imgCircle;
-    cvtColor(img, imgHR, COLOR_BGR2HSV); /* Tranform the image to cvtColor */
-    Scalar lower(Camera::hmin, Camera::smin, Camera::vmin);
-    Scalar upper(Camera::hmax, Camera::smax, Camera::vmax);
-    inRange(imgHR, lower, upper, mask); /* Set a range: img, startColor, endColor, mask */
-    mask.copyTo(imgCircle);
-    getContours(mask,imgCircle);
+    if (Camera::id == 0)
+    {
+        path = "../test/img/";
+        outName = "lastIn.jpg";
+    }
+    else if (Camera::id == 1)
+    {
+        path = "../test/img/";
+        outName = "lastOut.jpg";
+    } 
+    std::cout << " START CAMERA" << Camera::id << std::endl;
 
-    int totalNumberCirc = countNonZero(imgCircle);
-    int whitePixels = countNonZero(mask);
-    int percentageResult = 100 - (int)((whitePixels*100)/totalNumberCirc);
+    while((futureObj.wait_for(std::chrono::milliseconds(1)) == std::future_status::timeout) && (path != ""))
+    {
+        int randomNumber;
+        int randomSleep;
+        randomNumber = (std::rand() % 20) + 1;  /* To get random images */
+        randomSleep = (std::rand() % 7) + 2; 
+        std::this_thread::sleep_for(std::chrono::seconds(randomSleep));
 
-    std::cout << "White: " << whitePixels << std::endl;
-    std::cout << "Total: " << totalNumberCirc << std::endl;
-    std::cout << "Image:" << randomNumber << " Percentage:" << percentageResult << std::endl;
+        std::string filename = path + std::to_string(randomNumber) + ".jpg";
+        Mat img = imread(filename);   /* Mat it is the matrix for the image */
+        Mat imgHR, mask, imgGray, imgCircle;
+        cvtColor(img, imgHR, COLOR_BGR2HSV); /* Tranform the image to cvtColor */
+        Scalar lower(Camera::hmin, Camera::smin, Camera::vmin);
+        Scalar upper(Camera::hmax, Camera::smax, Camera::vmax);
+        inRange(imgHR, lower, upper, mask); /* Set a range: img, startColor, endColor, mask */
+        mask.copyTo(imgCircle);
+        getContours(mask,imgCircle);
 
-    std::string strResult = std::to_string(percentageResult) + "%";
+        int totalNumberCirc = countNonZero(imgCircle);
+        int whitePixels = countNonZero(mask);
+        int percentageResult = 100 - (int)((whitePixels*100)/totalNumberCirc);
 
-    putText(img, strResult, Point(100,100), 
-        FONT_HERSHEY_SIMPLEX , 3, Scalar(0,255,0), 3, false);
+        std::string strResult = std::to_string(percentageResult) + "%";
 
-    // Get dimension of final image
-    int rows = max(img.rows, mask.rows) + 10;
-    int cols = img.cols + mask.cols + 10;
-    // Create a black image
-    Mat3b res(rows, cols, Vec3b(0,0,0));
+        putText(img, strResult, Point(100,100), 
+            FONT_HERSHEY_SIMPLEX , 3, Scalar(0,255,0), 3, false);
 
-    cvtColor(mask, mask, COLOR_GRAY2RGB ); /* Tranform the image to cvtColor */
-    mask.copyTo(res(Rect(0, 0, mask.cols, mask.rows)));
-    img.copyTo(res(Rect(mask.cols, 0, img.cols, img.rows)));
-    resize(res, res, Size(1000,500), 0, 0, INTER_NEAREST );
-    imshow("Result", res);
+        // Get dimension of final image
+        int rows = max(img.rows, mask.rows) + 10;
+        int cols = img.cols + mask.cols + 10;
+        // Create a black image
+        Mat3b res(rows, cols, Vec3b(0,0,0));
 
-    
-    //filename = "../o.jpg";
-    //imwrite(filename, res);
-
+        cvtColor(mask, mask, COLOR_GRAY2RGB ); /* Tranform the image to cvtColor */
+        mask.copyTo(res(Rect(0, 0, mask.cols, mask.rows)));
+        img.copyTo(res(Rect(mask.cols, 0, img.cols, img.rows)));
+        resize(res, res, Size(600,300), 0, 0, INTER_NEAREST );
+        
+        std::cout << Camera::id << ": " << randomNumber << " P:" << percentageResult << std::endl;
+        filename = "../data/" + outName;
+        imwrite(filename, res);
+    }
+    std::cout << " END CAMERA" << Camera::id << std::endl;
 }
 
 void Camera::dPrintObj() {
@@ -126,3 +142,4 @@ void Camera::getContours(Mat imgGray, Mat img) {
     }
 
 }
+

@@ -19,7 +19,12 @@
 #include <wx/statline.h>
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
-
+#include <wx/textctrl.h>
+#include <wx/sizer.h>
+#include <wx/event.h>
+#include <vector>
+#include <future>
+#include <thread>
 
 class MyApp : public wxApp
 {
@@ -39,11 +44,17 @@ class MyFrame : public wxFrame
         wxCheckBox* CB_saveImg;
         wxRadioButton* RB_incoming;
         wxRadioButton* RB_outgoing;
+		wxStaticBitmap* StaticBitmapIn;
+		wxStaticBitmap* StaticBitmapOut;
         wxStaticLine* StaticLine1;
         wxStaticLine* StaticLine2;
         wxStaticLine* StaticLine3;
         wxStaticLine* StaticLine4;
+		wxStaticLine* StaticLine5;
         wxStaticText* StaticText10;
+		wxStaticText* StaticText11;
+		wxStaticText* StaticText12;
+        wxStaticText* StaticText13;
         wxStaticText* StaticText15;
         wxStaticText* StaticText16;
         wxStaticText* StaticText17;
@@ -74,6 +85,13 @@ class MyFrame : public wxFrame
         wxTextCtrl* T_manPorc;
         wxTextCtrl* T_manQuantity;
         wxTextCtrl* T_startDate;
+
+        std::thread tIncoming,tOutgoing;
+        std::promise<void> exitSignalIn;
+        std::promise<void> exitSignalOut;
+        std::future<void> futureObjIn;
+        std::future<void> futureObjOut;
+
 
     protected:
         static const long ID_ST_DAYFOOD;
@@ -119,8 +137,15 @@ class MyFrame : public wxFrame
         static const long ID_B_CSV;
         static const long ID_B_MANENTER;
         static const long ID_STATICLINE4;
+		static const long ID_STATICBITMAPIN;
+		static const long ID_STATICTEXT13;
+		static const long ID_STATICTEXT12;
+		static const long ID_STATICBITMAPOUT;
+		static const long ID_STATICLINE5;
 
     private:
+
+        void OnClose(wxCloseEvent& event);
         void OnB_processClick(wxCommandEvent& event);
         void OnCB_saveImgClick(wxCommandEvent& event);
         void OnCB_logClick(wxCommandEvent& event);

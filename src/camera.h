@@ -13,6 +13,8 @@
 #include <cstdlib>
 #include <ctime>
 #include <vector>
+#include <future>
+#include <thread>
 
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/highgui.hpp>
@@ -33,15 +35,16 @@ class Camera : public DebugFood {
         void dPrintObj(); /* Virtual function of the debug class */
 
         unsigned int Id(void) const { return id;};
-        bool SaveFlag(void) const { return id;};    
+        bool SaveFlag(void) const { return id;};   
         void Id(unsigned int uId){ id = uId;};
         void SaveFlag(bool uSaveFlag){ saveFlag = uSaveFlag;};
 
-        void processImage(void);
+        void processImage(std::future<void> futureObj);
 
     private:
         unsigned int id; /* Id of the camera/web-cam */
         bool saveFlag; /* True if save images */
+        //bool runFlag; /* True -> RUN */
 
         // Filter for the white plate color
         int const hmin = 0;

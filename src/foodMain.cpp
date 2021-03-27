@@ -12,9 +12,10 @@
 #include "records.h"
 #include "camera.h"
 
+
 // size of chatbot window
-constexpr int width = 400;
-constexpr int height = 750;
+constexpr int width = 1050;
+constexpr int height = 780;
 
 const long MyFrame::ID_ST_DAYFOOD = wxNewId();
 const long MyFrame::ID_ST_CURRENTDATE = wxNewId();
@@ -59,13 +60,26 @@ const long MyFrame::ID_ST_REQOUTPORC = wxNewId();
 const long MyFrame::ID_B_CSV = wxNewId();
 const long MyFrame::ID_B_MANENTER = wxNewId();
 const long MyFrame::ID_STATICLINE4 = wxNewId();
+const long MyFrame::ID_STATICTEXT13 = wxNewId();
+const long MyFrame::ID_STATICTEXT12 = wxNewId();
+const long MyFrame::ID_STATICBITMAPOUT = wxNewId();
+const long MyFrame::ID_STATICBITMAPIN = wxNewId();
+const long MyFrame::ID_STATICLINE5 = wxNewId();
+
+
 
 Camera myInCamera("LogCamIn.txt", "../log/", true, 0, false);  /* Incoming camara */
 Camera myOutCamera("LogCamOut.txt", "../log/", true, 1, false);  /* Outgoing camara */
+Record myRecord("LogRecord.txt", "../log/", true);
+
+
 
 wxIMPLEMENT_APP(MyApp);  /* MAIN */
 bool MyApp::OnInit()
 {
+    // make sure to call this first
+    wxInitAllImageHandlers();
+    
     /* SELFTEST OF THE SYSTEM */
     if (false == selfTest())
     {
@@ -83,7 +97,7 @@ bool MyApp::OnInit()
 }
 
 MyFrame::MyFrame()
-    : wxFrame(NULL, wxID_ANY, "Food Acceptance", wxDefaultPosition, wxSize(width, height))
+    : wxFrame(NULL, wxID_ANY, "Food Acceptance", wxDefaultPosition, wxSize(width, height), wxDEFAULT_FRAME_STYLE & ~(wxRESIZE_BORDER | wxMAXIMIZE_BOX))
 {
     wxMenu *menuFile = new wxMenu;
     menuFile->AppendSeparator();
@@ -116,7 +130,7 @@ MyFrame::MyFrame()
     CB_saveImg = new wxCheckBox(this, ID_CB_SAVEIMG, _("Save Img"), wxPoint(200,88), wxDefaultSize, 0, wxDefaultValidator, _T("ID_CB_SAVEIMG"));
     CB_saveImg->SetValue(false);
     CB_log = new wxCheckBox(this, ID_CB_LOG, _("Log"), wxPoint(200,120), wxDefaultSize, 0, wxDefaultValidator, _T("ID_CB_LOG"));
-    CB_log->SetValue(false);
+    CB_log->SetValue(true);
     B_process = new wxButton(this, ID_B_PROCESS, _("PROCESS"), wxPoint(288,112), wxDefaultSize, 0, wxDefaultValidator, _T("ID_B_PROCESS"));
     StaticText4 = new wxStaticText(this, ID_STATICTEXT5, _("QUANTITY"), wxPoint(16,192), wxDefaultSize, 0, _T("ID_STATICTEXT5"));
     T_manQuantity = new wxTextCtrl(this, ID_T_MANQUANTITY, _("0"), wxPoint(104,184), wxDefaultSize, 0, wxDefaultValidator, _T("ID_T_MANQUANTITY"));
@@ -155,6 +169,17 @@ MyFrame::MyFrame()
     B_manEnter = new wxButton(this, ID_B_MANENTER, _("ENTER"), wxPoint(315,184), wxDefaultSize, 0, wxDefaultValidator, _T("ID_B_MANENTER"));
     StaticLine4 = new wxStaticLine(this, ID_STATICLINE4, wxPoint(0,656), wxSize(400,-1), wxLI_HORIZONTAL, _T("ID_STATICLINE4"));
 
+	StaticBitmapIn = new wxStaticBitmap(this, ID_STATICBITMAPIN, wxBitmap(wxImage(_T("../data/start.jpg")).Rescale(wxSize(600,300).GetWidth(),wxSize(600,300).GetHeight())), wxPoint(432,64), wxSize(600,300), 0, _T("ID_STATICBITMAPIN"));
+	StaticBitmapIn->SetBackgroundColour(wxColour(196,196,196));
+	StaticText13 = new wxStaticText(this, ID_STATICTEXT13, _("INCOMING"), wxPoint(440,40), wxSize(120,17), 0, _T("ID_STATICTEXT13"));
+	wxFont StaticText13Font(10,wxFONTFAMILY_SWISS,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD,false,_T("Sans"),wxFONTENCODING_DEFAULT);
+	StaticText13->SetFont(StaticText13Font);
+	StaticText12 = new wxStaticText(this, ID_STATICTEXT12, _("OUTGOING"), wxPoint(440,376), wxSize(152,17), 0, _T("ID_STATICTEXT12"));
+	wxFont StaticText12Font(10,wxFONTFAMILY_SWISS,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD,false,_T("Sans"),wxFONTENCODING_DEFAULT);
+	StaticText12->SetFont(StaticText12Font);
+	StaticBitmapOut = new wxStaticBitmap(this, ID_STATICBITMAPOUT, wxBitmap(wxImage(_T("../data/start.jpg")).Rescale(wxSize(600,300).GetWidth(),wxSize(600,300).GetHeight())), wxPoint(432,400), wxSize(600,300), 0, _T("ID_STATICBITMAPOUT"));
+	StaticLine5 = new wxStaticLine(this, ID_STATICLINE5, wxPoint(408,0), wxSize(5,800), wxLI_HORIZONTAL, _T("ID_STATICLINE5"));
+
     Connect(ID_RB_INCOMING,wxEVT_COMMAND_RADIOBUTTON_SELECTED,(wxObjectEventFunction)&MyFrame::OnRB_incomingSelect);
     Connect(ID_RB_OUTGOING,wxEVT_COMMAND_RADIOBUTTON_SELECTED,(wxObjectEventFunction)&MyFrame::OnRB_outgoingSelect);
     Connect(ID_CB_SAVEIMG,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&MyFrame::OnCB_saveImgClick);
@@ -167,12 +192,30 @@ MyFrame::MyFrame()
     Connect(ID_B_FIND,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&MyFrame::OnB_findClick);
     Connect(ID_B_CSV,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&MyFrame::OnB_csvClick);
     Connect(ID_B_MANENTER,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&MyFrame::OnB_manEnterClick);
+    Connect(wxID_ANY,wxEVT_CLOSE_WINDOW,(wxObjectEventFunction)&MyFrame::OnClose);
 
 }
+
 void MyFrame::OnExit(wxCommandEvent& event)
 {
+    std::cout << "Close OnExit Event" << std::endl;
     Close(true);
 }
+
+
+void MyFrame::OnClose(wxCloseEvent& event)
+{
+  std::cout << "Close OnClose Event" << std::endl;
+  
+  exitSignalIn.set_value();
+  exitSignalOut.set_value();
+  SetStatusText("Wait!!!");
+  tIncoming.join();
+  tOutgoing.join();
+ 
+  event.Skip(true); 
+}
+
 void MyFrame::OnAbout(wxCommandEvent& event)
 {
     wxMessageBox("C++ Capstone Project for the Udacity C++ Nanodegree Program","", wxOK | wxICON_INFORMATION);
@@ -180,8 +223,42 @@ void MyFrame::OnAbout(wxCommandEvent& event)
 
 void MyFrame::OnB_processClick(wxCommandEvent& event)
 {
-    SetStatusText("Process a new image!");
-    myInCamera.processImage();
+    
+    if(myRecord.IsRunning())
+    {
+        /* TURN OFF */
+        B_process->SetBackgroundColour(*wxLIGHT_GREY);
+ 
+        exitSignalIn.set_value();
+        exitSignalOut.set_value();
+        myRecord.IsRunning(false);
+        StaticBitmapIn->SetBitmap(wxBitmap( "../data/start.jpg", wxBITMAP_TYPE_PNG));
+        StaticBitmapOut->SetBitmap(wxBitmap( "../data/start.jpg", wxBITMAP_TYPE_PNG));
+        SetStatusText("Wait!!!");
+        tIncoming.join();
+        tOutgoing.join();
+        exitSignalIn = {}; /* Reset the Promise */
+        exitSignalOut = {};
+
+        SetStatusText("Manual Mode");
+    }
+    else
+    {
+        /* TURN ON*/
+        B_process->SetBackgroundColour(*wxGREEN);
+        SetStatusText("Processing a new images!");
+
+        futureObjIn = exitSignalIn.get_future();
+        futureObjOut = exitSignalOut.get_future();
+        myRecord.IsRunning(true);
+        
+        tIncoming = std::thread(&Camera::processImage, myInCamera, std::move(futureObjIn));
+        tOutgoing = std::thread(&Camera::processImage, myOutCamera, std::move(futureObjOut));
+
+        StaticBitmapIn->SetBitmap(wxBitmap( "../data/lastIn.jpg", wxBITMAP_TYPE_PNG));
+        StaticBitmapOut->SetBitmap(wxBitmap( "../data/lastOut.jpg", wxBITMAP_TYPE_PNG));
+    }
+    
 }
 
 void MyFrame::OnCB_saveImgClick(wxCommandEvent& event)
