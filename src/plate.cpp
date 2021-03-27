@@ -66,8 +66,8 @@ unsigned int Plate::valNutrients (unsigned int uNutrients){
 } 
 
 /** 
- * @brief Request to the DB the plate name for the current day
+ * @brief Request to the DB the plate name for the current day (Empty for future version)
 */
 void RequestPlateName(void){
-    // TODO
+    // Empty - For the started version and for the curse propouse, the soft will used a fix plate
 }

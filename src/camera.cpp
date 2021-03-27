@@ -14,14 +14,15 @@
 */
 
 using namespace cv;
+
 RNG rng(12345);
 
 void Camera::processImage(void){
 
     int randomNumber;
-    randomNumber = (std::rand() % 7) + 1;  /* To get random images */
+    randomNumber = (std::rand() % 20) + 1;  /* To get random images */
 
-    std::string filename = "../test/img/t" + std::to_string(randomNumber) + ".png";
+    std::string filename = "../test/img/" + std::to_string(randomNumber) + ".jpg";
     Mat img = imread(filename);   /* Mat it is the matrix for the image */
     Mat imgHR, mask, imgGray, imgCircle;
     cvtColor(img, imgHR, COLOR_BGR2HSV); /* Tranform the image to cvtColor */
@@ -31,15 +32,34 @@ void Camera::processImage(void){
     mask.copyTo(imgCircle);
     getContours(mask,imgCircle);
 
-    imshow("Image", img);
-    imshow("mask", mask);
-    imshow("cir", imgCircle);
-    //int TotalNumberOfPixels = img.rows * img.cols;
-    int TotalNumberCirc = countNonZero(imgCircle);
-    int WhitePixels = countNonZero(mask);
-    std::cout << "White: " << WhitePixels << std::endl;
-    std::cout << "Total: " << TotalNumberCirc << std::endl;
-    std::cout << "Image:" << randomNumber << " Percentage:" << (int)((WhitePixels*100)/TotalNumberCirc) << std::endl;
+    int totalNumberCirc = countNonZero(imgCircle);
+    int whitePixels = countNonZero(mask);
+    int percentageResult = 100 - (int)((whitePixels*100)/totalNumberCirc);
+
+    std::cout << "White: " << whitePixels << std::endl;
+    std::cout << "Total: " << totalNumberCirc << std::endl;
+    std::cout << "Image:" << randomNumber << " Percentage:" << percentageResult << std::endl;
+
+    std::string strResult = std::to_string(percentageResult) + "%";
+
+    putText(img, strResult, Point(100,100), 
+        FONT_HERSHEY_SIMPLEX , 3, Scalar(0,255,0), 3, false);
+
+    // Get dimension of final image
+    int rows = max(img.rows, mask.rows) + 10;
+    int cols = img.cols + mask.cols + 10;
+    // Create a black image
+    Mat3b res(rows, cols, Vec3b(0,0,0));
+
+    cvtColor(mask, mask, COLOR_GRAY2RGB ); /* Tranform the image to cvtColor */
+    mask.copyTo(res(Rect(0, 0, mask.cols, mask.rows)));
+    img.copyTo(res(Rect(mask.cols, 0, img.cols, img.rows)));
+    resize(res, res, Size(1000,500), 0, 0, INTER_NEAREST );
+    imshow("Result", res);
+
+    
+    //filename = "../o.jpg";
+    //imwrite(filename, res);
 
 }
 
@@ -84,18 +104,25 @@ void Camera::getContours(Mat imgGray, Mat img) {
     std::vector<float>radius( contours.size() );
 
     Scalar color = Scalar( rng.uniform(255, 255), rng.uniform(255,255), rng.uniform(255,255) );
-/*
-    for( size_t i = 0; i < contours.size(); i++ )
+    bool findPlate = false;
+    if (contours.size() < 1)
     {
         approxPolyDP( contours[0], contours_poly[0], 3, true );
-        minEnclosingCircle( contours_poly[0], centers[0], radius[0] );
-        std::cout << "Circulo" << centers[0] << (int)radius[0] << std::endl;
+        int objCor = (int)contours_poly[0].size();
+        if (objCor > 4)
+        {
+            minEnclosingCircle( contours_poly[0], centers[0], radius[0] );
+            circle(img, centers[0], (int)radius[0], color, FILLED );
+            findPlate = true;
+        }
+    }
 
-        circle(img, centers[0], (int)radius[0], color, FILLED );
-    }*/
-
-    /* ONLY FOR TESTING!!! TODO */
-    cv::Point2f pt(701.274, 360.274);
-    circle(img, pt, 331, color, FILLED );
+    if (findPlate == false)
+    {
+        /* Don't find the plate...Try with a fix circle size to get a approximate value
+           - The idea is log this problem and in future version find a way to get a better result */
+        cv::Point2f pt(595, 563); /* Center point */
+        circle(img, pt, 540, color, FILLED ); /* A circle */
+    }
 
 }
