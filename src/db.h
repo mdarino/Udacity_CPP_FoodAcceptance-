@@ -13,16 +13,32 @@
 #include <iostream>
 #include <mutex>
 #include <vector>
-#include "plate.h"
 #include <ctime>
+#include <deque>
+#include <condition_variable>
+#include <future>
+#include <thread>
 
+#include "plate.h"
+
+template <class T>
+class RecordQueue
+{
+public:
+    T Process();
+    void Store(T &&record);
+private:
+    std::mutex _mutex;
+    std::condition_variable _cond;
+    std::deque<T> _records;
+};
 
 /** 
  * @brief PlateDB base class than contains the Attributes witch will be include in the DB
 */
-class PlateDB {
+class DBNewRecord {
     public:
-        PlateDB(std::string uPlateName, std::string uDate, bool uInFlag, unsigned int uPercentage, 
+        DBNewRecord(std::string uPlateName, std::string uDate, bool uInFlag, unsigned int uPercentage, 
                  unsigned int uExpPercentage, bool uManualSource) : plateName(uPlateName), date(uDate), 
                  inFLag(uInFlag), percentage(uPercentage), expPercentage(uExpPercentage), 
                  manualSource(uManualSource) {};
@@ -54,25 +70,10 @@ class PlateDB {
 };
 
 
-template <class T>
-class DataBase
-{
-public:
-    DataBase(std::string uDbName) : dbName(uDbName) {};
-    std::string DbName(void) {return dbName;};
-    void DbName(std::string uDbName) {dbName = uDbName;};
-
-    unsigned int AskId(std::string date);
-    std::vector<T>request(unsigned int startId, unsigned int endId);
-    void send(T &&data);
-private:
-    std::mutex _mutex_data;
-    std::string dbName;
-};
-
-
 class ResultDB {
     public:
+
+        RecordQueue<DBNewRecord> newDataResult;
         unsigned int dayQuantity(bool inFLag);
         unsigned int dayPercentage(bool inFLag);
         void addOnePlate(bool inFLag);
@@ -81,10 +82,10 @@ class ResultDB {
         int requestQuantity(std::string startDate, std::string endDate, unsigned int &in, unsigned int &out);
         int requestPercentage(std::string startDate, std::string endDate, unsigned int &in, unsigned int &out);
         int csvFile(std::string startDate, std::string endDate);
+
+        void processRecords(void);
     private:
-        PlateDB _data;
-        DataBase<PlateDB> newDataResult;
-        DataBase<Plate> newDataPlate;
+
         unsigned int quantity_out;  ///< Store the partial day result to avoid ask all the time to the DB - Number of plates outgoing
         unsigned int sumPercentage_out; ///< Percentage summation of the day
         unsigned int quantity_in;  ///< Store the partial day result to avoid ask all the time to the DB - Number of plates outgoing

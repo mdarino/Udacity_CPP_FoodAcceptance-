@@ -17,20 +17,22 @@ using namespace cv;
 
 RNG rng(12345);
 
-void Camera::processImage(std::future<void> futureObj){
+void Camera::processImage(std::future<void> futureObj, std::shared_ptr<ResultDB> record){
 
     std::string outName = "";
     std::string path = "";
-
+    bool inFlag;
     if (Camera::id == 0)
     {
         path = "../test/img/";
         outName = "lastIn.jpg";
+        inFlag = true;
     }
     else if (Camera::id == 1)
     {
         path = "../test/img/";
         outName = "lastOut.jpg";
+        inFlag = false;
     } 
     std::cout << " START CAMERA" << Camera::id << std::endl;
 
@@ -54,7 +56,7 @@ void Camera::processImage(std::future<void> futureObj){
 
         int totalNumberCirc = countNonZero(imgCircle);
         int whitePixels = countNonZero(mask);
-        int percentageResult = 100 - (int)((whitePixels*100)/totalNumberCirc);
+        unsigned int percentageResult = (unsigned int) (100 - (int)((whitePixels*100)/totalNumberCirc));
 
         std::string strResult = std::to_string(percentageResult) + "%";
 
@@ -75,6 +77,14 @@ void Camera::processImage(std::future<void> futureObj){
         std::cout << Camera::id << ": " << randomNumber << " P:" << percentageResult << std::endl;
         filename = "../data/" + outName;
         imwrite(filename, res);
+
+        /* Store in the DB */
+        DBNewRecord myNewRecord("Rice", "10/10/2020", inFlag, percentageResult, 70, false);
+        auto ftr_store = (std::async(std::launch::async, &RecordQueue<DBNewRecord>::Store, &(record->newDataResult), std::move(myNewRecord)));
+        ftr_store.wait(); /* Wait the store  */
+
+
+
     }
     std::cout << " END CAMERA" << Camera::id << std::endl;
 }

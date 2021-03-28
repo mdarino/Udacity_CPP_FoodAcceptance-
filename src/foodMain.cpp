@@ -11,6 +11,7 @@
 #include "plate.h"
 #include "records.h"
 #include "camera.h"
+#include "db.h"
 
 
 // size of chatbot window
@@ -71,7 +72,10 @@ const long MyFrame::ID_STATICLINE5 = wxNewId();
 Camera myInCamera("LogCamIn.txt", "../log/", true, 0, false);  /* Incoming camara */
 Camera myOutCamera("LogCamOut.txt", "../log/", true, 1, false);  /* Outgoing camara */
 Record myRecord("LogRecord.txt", "../log/", true);
-
+//ResultDB myResult;
+//std::shared_ptr<ResultDB> myResultPointer;
+std::shared_ptr<ResultDB> myResult(new ResultDB);
+std::thread tResults;
 
 
 wxIMPLEMENT_APP(MyApp);  /* MAIN */
@@ -91,6 +95,7 @@ bool MyApp::OnInit()
     myInCamera.dPrintObj();
     myOutCamera.dPrintObj();
 
+    tResults = std::thread(&ResultDB::processRecords, myResult); /*STD REF to avoid std::tuple …’ no overloaded function …”.*/
     MyFrame *frame = new MyFrame();
     frame->Show(true);
     return true;
@@ -207,12 +212,15 @@ void MyFrame::OnClose(wxCloseEvent& event)
 {
   std::cout << "Close OnClose Event" << std::endl;
   
+  if(myRecord.IsRunning())
+  {
   exitSignalIn.set_value();
   exitSignalOut.set_value();
   SetStatusText("Wait!!!");
   tIncoming.join();
   tOutgoing.join();
- 
+  }
+  tResults.join(); 
   event.Skip(true); 
 }
 
@@ -231,12 +239,12 @@ void MyFrame::OnB_processClick(wxCommandEvent& event)
  
         exitSignalIn.set_value();
         exitSignalOut.set_value();
-        myRecord.IsRunning(false);
         StaticBitmapIn->SetBitmap(wxBitmap( "../data/start.jpg", wxBITMAP_TYPE_PNG));
         StaticBitmapOut->SetBitmap(wxBitmap( "../data/start.jpg", wxBITMAP_TYPE_PNG));
         SetStatusText("Wait!!!");
         tIncoming.join();
         tOutgoing.join();
+        myRecord.IsRunning(false);
         exitSignalIn = {}; /* Reset the Promise */
         exitSignalOut = {};
 
@@ -247,13 +255,12 @@ void MyFrame::OnB_processClick(wxCommandEvent& event)
         /* TURN ON*/
         B_process->SetBackgroundColour(*wxGREEN);
         SetStatusText("Processing a new images!");
-
         futureObjIn = exitSignalIn.get_future();
         futureObjOut = exitSignalOut.get_future();
         myRecord.IsRunning(true);
         
-        tIncoming = std::thread(&Camera::processImage, myInCamera, std::move(futureObjIn));
-        tOutgoing = std::thread(&Camera::processImage, myOutCamera, std::move(futureObjOut));
+        tIncoming = std::thread(&Camera::processImage, myInCamera, std::move(futureObjIn), myResult);
+        tOutgoing = std::thread(&Camera::processImage, myOutCamera, std::move(futureObjOut), myResult);
 
         StaticBitmapIn->SetBitmap(wxBitmap( "../data/lastIn.jpg", wxBITMAP_TYPE_PNG));
         StaticBitmapOut->SetBitmap(wxBitmap( "../data/lastOut.jpg", wxBITMAP_TYPE_PNG));

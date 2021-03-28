@@ -22,7 +22,7 @@
 
 
 #include "debugFood.h"
-
+#include "db.h"
 
 
 /** 
@@ -39,7 +39,7 @@ class Camera : public DebugFood {
         void Id(unsigned int uId){ id = uId;};
         void SaveFlag(bool uSaveFlag){ saveFlag = uSaveFlag;};
 
-        void processImage(std::future<void> futureObj);
+        void processImage(std::future<void> futureObj, std::shared_ptr<ResultDB> record);
 
     private:
         unsigned int id; /* Id of the camera/web-cam */

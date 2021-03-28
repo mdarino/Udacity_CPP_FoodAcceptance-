@@ -7,26 +7,22 @@
 
 #include "db.h"
 
-/** 
- * @brief Ask for data from the DB
- * @param T Template variable
-*/
 template <typename T>
-std::vector<T> DataBase<T>::request(unsigned int startId, unsigned int endId){
-    // Ask for information under the lock
-    //TODO//
+T RecordQueue<T>::Process()
+{
+    std::unique_lock<std::mutex> uLock(_mutex);
+    _cond.wait(uLock, [this] { return !_records.empty(); }); // pass unique lock to condition variable
+    T msg = std::move(_records.back());
+    _records.pop_back();
+    return msg;
 }
 
-/** 
- * @brief Send new data to the DB
- * @param T Template variable
-*/
 template <typename T>
-void DataBase<T>::send(T &&msg)
+void RecordQueue<T>::Store(T &&record)
 {
-    // Add information to the DB under the lock
-    //TODO//
-
+    std::lock_guard<std::mutex> uLock(_mutex);
+    _records.push_back(std::move(record));
+    _cond.notify_one();
 }
 
 /** 
@@ -117,3 +113,12 @@ int ResultDB::csvFile(std::string startDate, std::string endDate){
     return 1;
 }
 
+
+void ResultDB::processRecords(void){
+    //while (1)
+    {
+      std::this_thread::sleep_for(std::chrono::seconds(3));
+      std::cout << "My DB";
+
+    }
+}
