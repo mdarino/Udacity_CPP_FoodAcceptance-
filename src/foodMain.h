@@ -44,16 +44,16 @@ class MyFrame : public wxFrame
         wxCheckBox* CB_saveImg;
         wxRadioButton* RB_incoming;
         wxRadioButton* RB_outgoing;
-		wxStaticBitmap* StaticBitmapIn;
-		wxStaticBitmap* StaticBitmapOut;
+        wxStaticBitmap* StaticBitmapIn;
+        wxStaticBitmap* StaticBitmapOut;
         wxStaticLine* StaticLine1;
         wxStaticLine* StaticLine2;
         wxStaticLine* StaticLine3;
         wxStaticLine* StaticLine4;
-		wxStaticLine* StaticLine5;
+        wxStaticLine* StaticLine5;
         wxStaticText* StaticText10;
-		wxStaticText* StaticText11;
-		wxStaticText* StaticText12;
+        wxStaticText* StaticText11;
+        wxStaticText* StaticText12;
         wxStaticText* StaticText13;
         wxStaticText* StaticText15;
         wxStaticText* StaticText16;
@@ -83,8 +83,9 @@ class MyFrame : public wxFrame
         wxStaticText* st_reqOutQuantity;
         wxTextCtrl* T_endDate;
         wxTextCtrl* T_manPorc;
-        wxTextCtrl* T_manQuantity;
+        wxTextCtrl* T_manDate;
         wxTextCtrl* T_startDate;
+        wxTimer Timer1;
 
         std::thread tIncoming,tOutgoing;
         std::promise<void> exitSignalIn;
@@ -106,7 +107,7 @@ class MyFrame : public wxFrame
         static const long ID_CB_LOG;
         static const long ID_B_PROCESS;
         static const long ID_STATICTEXT5;
-        static const long ID_T_MANQUANTITY;
+        static const long ID_T_MANDATE;
         static const long ID_STATICTEXT6;
         static const long ID_T_MANPORC;
         static const long ID_STATICLINE2;
@@ -137,12 +138,12 @@ class MyFrame : public wxFrame
         static const long ID_B_CSV;
         static const long ID_B_MANENTER;
         static const long ID_STATICLINE4;
-		static const long ID_STATICBITMAPIN;
-		static const long ID_STATICTEXT13;
-		static const long ID_STATICTEXT12;
-		static const long ID_STATICBITMAPOUT;
-		static const long ID_STATICLINE5;
-
+        static const long ID_STATICBITMAPIN;
+        static const long ID_STATICTEXT13;
+        static const long ID_STATICTEXT12;
+        static const long ID_STATICBITMAPOUT;
+        static const long ID_STATICLINE5;
+        static const long ID_TIMER1;
     private:
 
         void OnClose(wxCloseEvent& event);
@@ -152,7 +153,7 @@ class MyFrame : public wxFrame
         void OnRB_outgoingSelect(wxCommandEvent& event);
         void OnRB_incomingSelect(wxCommandEvent& event);
         void OnB_manEnterClick(wxCommandEvent& event);
-        void OnT_manQuantityText(wxCommandEvent& event);
+        void OnT_manDateText(wxCommandEvent& event);
         void OnT_manPorcText(wxCommandEvent& event);
         void OnT_startDateText(wxCommandEvent& event);
         void OnT_endDateText(wxCommandEvent& event);
@@ -160,6 +161,8 @@ class MyFrame : public wxFrame
         void OnB_csvClick(wxCommandEvent& event);
         void OnExit(wxCommandEvent& event);
         void OnAbout(wxCommandEvent& event);
+        void OnTimer1Trigger(wxTimerEvent& event);
+
 };
 
 #endif

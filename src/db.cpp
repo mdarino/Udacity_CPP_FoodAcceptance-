@@ -75,11 +75,14 @@ unsigned int ResultDB::dayQuantity(bool inFLag){
 */
 unsigned int ResultDB::dayPercentage(bool inFLag){
     if(inFLag){
-        return (unsigned int)(sumPercentage_in/quantity_in);
+        if (quantity_in > 0)
+            return (unsigned int)(sumPercentage_in/quantity_in);
     }
     else{
-        return (unsigned int)(sumPercentage_out/quantity_out);
+        if (quantity_out > 0)
+            return (unsigned int)(sumPercentage_out/quantity_out);
     }
+    return 0;
 }
 
 /** 
@@ -142,7 +145,6 @@ int ResultDB::csvFile(std::string startDate, std::string endDate){
     return 1;
 }
 
-
 void ResultDB::processRecords(std::future<void> futureObj){
     
     while ((futureObj.wait_for(std::chrono::milliseconds(1)) == std::future_status::timeout) )
@@ -151,14 +153,13 @@ void ResultDB::processRecords(std::future<void> futureObj){
 
         char *zErrMsg = 0;
         int rc;
-            /* Create SQL statement */
+        /* Create SQL statement */
         std::string sqlCmd = "INSERT INTO PLATES (NAME,DATE,INFLAG,PERCENTAGE,EXPECTED,MANUAL) VALUES ('" + 
                             dataToDB.plateName + "', '" + dataToDB.date + "', " + 
                              std::to_string((int)dataToDB.inFLag) + ", " +
                              std::to_string(dataToDB.percentage)+ ", " +
                              std::to_string(dataToDB.expPercentage)+ ", " +
                              std::to_string((int)dataToDB.manualSource)+ ");";
-       
         /* Execute SQL statement */
         const char* sql = sqlCmd.c_str();
         rc = sqlite3_exec(db, sql, NULL, 0, &zErrMsg);
@@ -168,7 +169,6 @@ void ResultDB::processRecords(std::future<void> futureObj){
         } else {
             std::cout << "Process DB" << std::endl;
         }
-
     }
     std::cout << " END PROCESS RECORDS" << std::endl;
 }

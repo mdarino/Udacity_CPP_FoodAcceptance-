@@ -82,8 +82,8 @@ void Camera::processImage(std::future<void> futureObj, std::shared_ptr<ResultDB>
         DBNewRecord myNewRecord("Rice", "10/10/2020", inFlag, percentageResult, 70, false);
         auto ftr_store = (std::async(std::launch::async, &RecordQueue<DBNewRecord>::Store, &(record->newDataResult), std::move(myNewRecord)));
         ftr_store.wait(); /* Wait the store  */
-
-
+        record->addOnePlate(inFlag);
+        record->addOnePercentage(inFlag, percentageResult);
 
     }
     std::cout << " END CAMERA" << Camera::id << std::endl;

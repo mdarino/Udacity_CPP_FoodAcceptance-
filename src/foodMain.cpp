@@ -30,7 +30,7 @@ const long MyFrame::ID_CB_SAVEIMG = wxNewId();
 const long MyFrame::ID_CB_LOG = wxNewId();
 const long MyFrame::ID_B_PROCESS = wxNewId();
 const long MyFrame::ID_STATICTEXT5 = wxNewId();
-const long MyFrame::ID_T_MANQUANTITY = wxNewId();
+const long MyFrame::ID_T_MANDATE = wxNewId();
 const long MyFrame::ID_STATICTEXT6 = wxNewId();
 const long MyFrame::ID_T_MANPORC = wxNewId();
 const long MyFrame::ID_STATICLINE2 = wxNewId();
@@ -66,7 +66,7 @@ const long MyFrame::ID_STATICTEXT12 = wxNewId();
 const long MyFrame::ID_STATICBITMAPOUT = wxNewId();
 const long MyFrame::ID_STATICBITMAPIN = wxNewId();
 const long MyFrame::ID_STATICLINE5 = wxNewId();
-
+const long MyFrame::ID_TIMER1 = wxNewId();
 
 
 Camera myInCamera("LogCamIn.txt", "../log/", true, 0, false);  /* Incoming camara */
@@ -127,20 +127,20 @@ MyFrame::MyFrame()
     StaticText2 = new wxStaticText(this, ID_STATICTEXT3, _("DATE"), wxPoint(10,48), wxDefaultSize, 0, _T("ID_STATICTEXT3"));
     wxFont StaticText2Font(10,wxFONTFAMILY_SWISS,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD,false,_T("Sans"),wxFONTENCODING_DEFAULT);
     StaticText2->SetFont(StaticText2Font);
-    StaticLine1 = new wxStaticLine(this, ID_STATICLINE1, wxPoint(0,152), wxSize(400,-1), wxLI_HORIZONTAL, _T("ID_STATICLINE1"));
-    RB_incoming = new wxRadioButton(this, ID_RB_INCOMING, _("INCOMING"), wxPoint(24,88), wxDefaultSize, 0, wxDefaultValidator, _T("ID_RB_INCOMING"));
-    RB_outgoing = new wxRadioButton(this, ID_RB_OUTGOING, _("OUTGOING"), wxPoint(24,120), wxDefaultSize, 0, wxDefaultValidator, _T("ID_RB_OUTGOING"));
-    StaticText3 = new wxStaticText(this, ID_STATICTEXT4, _("MANUAL CONTROL"), wxPoint(10,160), wxSize(112,17), 0, _T("ID_STATICTEXT4"));
+    StaticLine1 = new wxStaticLine(this, ID_STATICLINE1, wxPoint(8,120), wxSize(400,-1), wxLI_HORIZONTAL, _T("ID_STATICLINE1"));
+    RB_incoming = new wxRadioButton(this, ID_RB_INCOMING, _("INCOMING"), wxPoint(200,152), wxDefaultSize, 0, wxDefaultValidator, _T("ID_RB_INCOMING"));
+    RB_outgoing = new wxRadioButton(this, ID_RB_OUTGOING, _("OUTGOING"), wxPoint(80,152), wxDefaultSize, 0, wxDefaultValidator, _T("ID_RB_OUTGOING"));
+    StaticText3 = new wxStaticText(this, ID_STATICTEXT4, _("MANUAL CONTROL"), wxPoint(8,128), wxSize(112,17), 0, _T("ID_STATICTEXT4"));
     wxFont StaticText3Font(10,wxFONTFAMILY_SWISS,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD,false,_T("Sans"),wxFONTENCODING_DEFAULT);
     StaticText3->SetFont(StaticText3Font);
-    CB_saveImg = new wxCheckBox(this, ID_CB_SAVEIMG, _("Save Img"), wxPoint(200,88), wxDefaultSize, 0, wxDefaultValidator, _T("ID_CB_SAVEIMG"));
+    CB_saveImg = new wxCheckBox(this, ID_CB_SAVEIMG, _("Save Img"), wxPoint(440,8), wxDefaultSize, 0, wxDefaultValidator, _T("ID_CB_SAVEIMG"));
     CB_saveImg->SetValue(false);
-    CB_log = new wxCheckBox(this, ID_CB_LOG, _("Log"), wxPoint(200,120), wxDefaultSize, 0, wxDefaultValidator, _T("ID_CB_LOG"));
+    CB_log = new wxCheckBox(this, ID_CB_LOG, _("Log"), wxPoint(544,8), wxDefaultSize, 0, wxDefaultValidator, _T("ID_CB_LOG"));
     CB_log->SetValue(true);
-    B_process = new wxButton(this, ID_B_PROCESS, _("PROCESS"), wxPoint(288,112), wxDefaultSize, 0, wxDefaultValidator, _T("ID_B_PROCESS"));
-    StaticText4 = new wxStaticText(this, ID_STATICTEXT5, _("QUANTITY"), wxPoint(16,192), wxDefaultSize, 0, _T("ID_STATICTEXT5"));
-    T_manQuantity = new wxTextCtrl(this, ID_T_MANQUANTITY, _("0"), wxPoint(104,184), wxDefaultSize, 0, wxDefaultValidator, _T("ID_T_MANQUANTITY"));
-    StaticText5 = new wxStaticText(this, ID_STATICTEXT6, _("%"), wxPoint(202,192), wxDefaultSize, 0, _T("ID_STATICTEXT6"));
+    B_process = new wxButton(this, ID_B_PROCESS, _("PROCESS"), wxPoint(16,80), wxSize(368,34), 0, wxDefaultValidator, _T("ID_B_PROCESS"));
+    StaticText4 = new wxStaticText(this, ID_STATICTEXT5, _("DATE"), wxPoint(16,192), wxDefaultSize, 0, _T("ID_STATICTEXT5"));
+    T_manDate = new wxTextCtrl(this, ID_T_MANDATE, _("mm/dd/yyyy"), wxPoint(80,184), wxSize(108,34), 0, wxDefaultValidator, _T("ID_T_MANDATE"));
+    StaticText5 = new wxStaticText(this, ID_STATICTEXT6, _("%"), wxPoint(200,192), wxDefaultSize, 0, _T("ID_STATICTEXT6"));
     T_manPorc = new wxTextCtrl(this, ID_T_MANPORC, _("0"), wxPoint(216,184), wxDefaultSize, 0, wxDefaultValidator, _T("ID_T_MANPORC"));
     StaticLine2 = new wxStaticLine(this, ID_STATICLINE2, wxPoint(0,232), wxSize(400,-1), wxLI_HORIZONTAL, _T("ID_STATICLINE2"));
     StaticText6 = new wxStaticText(this, ID_STATICTEXT7, _("DAY RESULTS"), wxPoint(10,240), wxSize(174,17), 0, _T("ID_STATICTEXT7"));
@@ -150,10 +150,10 @@ MyFrame::MyFrame()
     StaticText8 = new wxStaticText(this, ID_STATICTEXT9, _("%"), wxPoint(216,272), wxDefaultSize, 0, _T("ID_STATICTEXT9"));
     StaticText9 = new wxStaticText(this, ID_STATICTEXT10, _("IN"), wxPoint(16,312), wxDefaultSize, 0, _T("ID_STATICTEXT10"));
     StaticText10 = new wxStaticText(this, ID_STATICTEXT11, _("OUT"), wxPoint(16,344), wxDefaultSize, 0, _T("ID_STATICTEXT11"));
-    st_dayInQuantity = new wxStaticText(this, ID_ST_DAYINQUANTITY, _("___"), wxPoint(112,312), wxDefaultSize, 0, _T("ID_ST_DAYINQUANTITY"));
-    st_dayInPorc = new wxStaticText(this, ID_ST_DAYINPORC, _("___"), wxPoint(216,312), wxDefaultSize, 0, _T("ID_ST_DAYINPORC"));
-    st_dayOutQuantity = new wxStaticText(this, ID_ST_DAYOUTQUANTITY, _("___"), wxPoint(112,344), wxDefaultSize, 0, _T("ID_ST_DAYOUTQUANTITY"));
-    st_dayOutPorc = new wxStaticText(this, ID_ST_DAYOUTPORC, _("___"), wxPoint(216,344), wxDefaultSize, 0, _T("ID_ST_DAYOUTPORC"));
+    st_dayInQuantity = new wxStaticText(this, ID_ST_DAYINQUANTITY, _("0"), wxPoint(112,312), wxDefaultSize, 0, _T("ID_ST_DAYINQUANTITY"));
+    st_dayInPorc = new wxStaticText(this, ID_ST_DAYINPORC, _("0"), wxPoint(216,312), wxDefaultSize, 0, _T("ID_ST_DAYINPORC"));
+    st_dayOutQuantity = new wxStaticText(this, ID_ST_DAYOUTQUANTITY, _("0"), wxPoint(112,344), wxDefaultSize, 0, _T("ID_ST_DAYOUTQUANTITY"));
+    st_dayOutPorc = new wxStaticText(this, ID_ST_DAYOUTPORC, _("0"), wxPoint(216,344), wxDefaultSize, 0, _T("ID_ST_DAYOUTPORC"));
     StaticLine3 = new wxStaticLine(this, ID_STATICLINE3, wxPoint(0,384), wxSize(400,-1), wxLI_HORIZONTAL, _T("ID_STATICLINE3"));
     StaticText15 = new wxStaticText(this, ID_STATICTEXT16, _("DB REQUEST"), wxPoint(8,392), wxSize(184,17), 0, _T("ID_STATICTEXT16"));
     wxFont StaticText15Font(10,wxFONTFAMILY_SWISS,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD,false,_T("Sans"),wxFONTENCODING_DEFAULT);
@@ -175,29 +175,31 @@ MyFrame::MyFrame()
     B_manEnter = new wxButton(this, ID_B_MANENTER, _("ENTER"), wxPoint(315,184), wxDefaultSize, 0, wxDefaultValidator, _T("ID_B_MANENTER"));
     StaticLine4 = new wxStaticLine(this, ID_STATICLINE4, wxPoint(0,656), wxSize(400,-1), wxLI_HORIZONTAL, _T("ID_STATICLINE4"));
 
-	StaticBitmapIn = new wxStaticBitmap(this, ID_STATICBITMAPIN, wxBitmap(wxImage(_T("../data/start.jpg")).Rescale(wxSize(600,300).GetWidth(),wxSize(600,300).GetHeight())), wxPoint(432,64), wxSize(600,300), 0, _T("ID_STATICBITMAPIN"));
-	StaticBitmapIn->SetBackgroundColour(wxColour(196,196,196));
-	StaticText13 = new wxStaticText(this, ID_STATICTEXT13, _("INCOMING"), wxPoint(440,40), wxSize(120,17), 0, _T("ID_STATICTEXT13"));
-	wxFont StaticText13Font(10,wxFONTFAMILY_SWISS,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD,false,_T("Sans"),wxFONTENCODING_DEFAULT);
-	StaticText13->SetFont(StaticText13Font);
-	StaticText12 = new wxStaticText(this, ID_STATICTEXT12, _("OUTGOING"), wxPoint(440,376), wxSize(152,17), 0, _T("ID_STATICTEXT12"));
-	wxFont StaticText12Font(10,wxFONTFAMILY_SWISS,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD,false,_T("Sans"),wxFONTENCODING_DEFAULT);
-	StaticText12->SetFont(StaticText12Font);
-	StaticBitmapOut = new wxStaticBitmap(this, ID_STATICBITMAPOUT, wxBitmap(wxImage(_T("../data/start.jpg")).Rescale(wxSize(600,300).GetWidth(),wxSize(600,300).GetHeight())), wxPoint(432,400), wxSize(600,300), 0, _T("ID_STATICBITMAPOUT"));
-	StaticLine5 = new wxStaticLine(this, ID_STATICLINE5, wxPoint(408,0), wxSize(5,800), wxLI_HORIZONTAL, _T("ID_STATICLINE5"));
-
+    StaticBitmapIn = new wxStaticBitmap(this, ID_STATICBITMAPIN, wxBitmap(wxImage(_T("../data/start.jpg")).Rescale(wxSize(600,300).GetWidth(),wxSize(600,300).GetHeight())), wxPoint(432,64), wxSize(600,300), 0, _T("ID_STATICBITMAPIN"));
+    StaticBitmapIn->SetBackgroundColour(wxColour(196,196,196));
+    StaticText13 = new wxStaticText(this, ID_STATICTEXT13, _("INCOMING"), wxPoint(440,40), wxSize(120,17), 0, _T("ID_STATICTEXT13"));
+    wxFont StaticText13Font(10,wxFONTFAMILY_SWISS,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD,false,_T("Sans"),wxFONTENCODING_DEFAULT);
+    StaticText13->SetFont(StaticText13Font);
+    StaticText12 = new wxStaticText(this, ID_STATICTEXT12, _("OUTGOING"), wxPoint(440,376), wxSize(152,17), 0, _T("ID_STATICTEXT12"));
+    wxFont StaticText12Font(10,wxFONTFAMILY_SWISS,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD,false,_T("Sans"),wxFONTENCODING_DEFAULT);
+    StaticText12->SetFont(StaticText12Font);
+    StaticBitmapOut = new wxStaticBitmap(this, ID_STATICBITMAPOUT, wxBitmap(wxImage(_T("../data/start.jpg")).Rescale(wxSize(600,300).GetWidth(),wxSize(600,300).GetHeight())), wxPoint(432,400), wxSize(600,300), 0, _T("ID_STATICBITMAPOUT"));
+    StaticLine5 = new wxStaticLine(this, ID_STATICLINE5, wxPoint(408,0), wxSize(5,800), wxLI_HORIZONTAL, _T("ID_STATICLINE5"));
+    Timer1.SetOwner(this, ID_TIMER1);
+    
     Connect(ID_RB_INCOMING,wxEVT_COMMAND_RADIOBUTTON_SELECTED,(wxObjectEventFunction)&MyFrame::OnRB_incomingSelect);
     Connect(ID_RB_OUTGOING,wxEVT_COMMAND_RADIOBUTTON_SELECTED,(wxObjectEventFunction)&MyFrame::OnRB_outgoingSelect);
     Connect(ID_CB_SAVEIMG,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&MyFrame::OnCB_saveImgClick);
     Connect(ID_CB_LOG,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&MyFrame::OnCB_logClick);
     Connect(ID_B_PROCESS,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&MyFrame::OnB_processClick);
-    Connect(ID_T_MANQUANTITY,wxEVT_COMMAND_TEXT_UPDATED,(wxObjectEventFunction)&MyFrame::OnT_manQuantityText);
+    Connect(ID_T_MANDATE,wxEVT_COMMAND_TEXT_UPDATED,(wxObjectEventFunction)&MyFrame::OnT_manDateText);
     Connect(ID_T_MANPORC,wxEVT_COMMAND_TEXT_UPDATED,(wxObjectEventFunction)&MyFrame::OnT_manPorcText);
     Connect(ID_T_STARTDATE,wxEVT_COMMAND_TEXT_UPDATED,(wxObjectEventFunction)&MyFrame::OnT_startDateText);
     Connect(ID_T_ENDDATE,wxEVT_COMMAND_TEXT_UPDATED,(wxObjectEventFunction)&MyFrame::OnT_endDateText);
     Connect(ID_B_FIND,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&MyFrame::OnB_findClick);
     Connect(ID_B_CSV,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&MyFrame::OnB_csvClick);
     Connect(ID_B_MANENTER,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&MyFrame::OnB_manEnterClick);
+    Connect(ID_TIMER1,wxEVT_TIMER,(wxObjectEventFunction)&MyFrame::OnTimer1Trigger);
     Connect(wxID_ANY,wxEVT_CLOSE_WINDOW,(wxObjectEventFunction)&MyFrame::OnClose);
 
 }
@@ -222,8 +224,9 @@ void MyFrame::OnClose(wxCloseEvent& event)
   tOutgoing.join();
   }
   tResultExit.set_value();
-  tResults.join(); 
-  event.Skip(true); 
+  tResults.join();
+  Timer1.Stop();
+  event.Skip(true);
 }
 
 void MyFrame::OnAbout(wxCommandEvent& event)
@@ -237,41 +240,67 @@ void MyFrame::OnB_processClick(wxCommandEvent& event)
     if(myRecord.IsRunning())
     {
         /* TURN OFF */
-        B_process->SetBackgroundColour(*wxLIGHT_GREY);
- 
+        SetStatusText("Wait!!!");
+        B_process->SetBackgroundColour(*wxYELLOW);
+        B_process->SetLabel("PLEASE WAIT");
         exitSignalIn.set_value();
         exitSignalOut.set_value();
         StaticBitmapIn->SetBitmap(wxBitmap( "../data/start.jpg", wxBITMAP_TYPE_PNG));
         StaticBitmapOut->SetBitmap(wxBitmap( "../data/start.jpg", wxBITMAP_TYPE_PNG));
-        SetStatusText("Wait!!!");
         tIncoming.join();
         tOutgoing.join();
         myRecord.IsRunning(false);
         exitSignalIn = {}; /* Reset the Promise */
         exitSignalOut = {};
-
+        Timer1.Stop();
         SetStatusText("Manual Mode");
+        B_process->SetBackgroundColour(*wxLIGHT_GREY);
+        B_process->SetLabel("PROCESS");
+
+        B_manEnter->Enable(true);
+        B_csv->Enable(true);
+        B_find->Enable(true);
+        T_endDate->Enable(true);
+        T_startDate->Enable(true);
+        T_manPorc->Enable(true);
+        T_manDate->Enable(true);
+        CB_log->Enable(true);
+        CB_saveImg->Enable(true);
+        RB_incoming->Enable(true);
+        RB_outgoing->Enable(true);
     }
     else
     {
         /* TURN ON*/
         B_process->SetBackgroundColour(*wxGREEN);
+        B_process->SetLabel("RUN");
         SetStatusText("Processing a new images!");
         futureObjIn = exitSignalIn.get_future();
         futureObjOut = exitSignalOut.get_future();
         myRecord.IsRunning(true);
-        
+        Timer1.Start(1000, wxTIMER_CONTINUOUS);
         tIncoming = std::thread(&Camera::processImage, myInCamera, std::move(futureObjIn), myResult);
         tOutgoing = std::thread(&Camera::processImage, myOutCamera, std::move(futureObjOut), myResult);
-
-        StaticBitmapIn->SetBitmap(wxBitmap( "../data/lastIn.jpg", wxBITMAP_TYPE_PNG));
-        StaticBitmapOut->SetBitmap(wxBitmap( "../data/lastOut.jpg", wxBITMAP_TYPE_PNG));
+   
+        B_manEnter->Enable(false);
+        B_csv->Enable(false);
+        B_find->Enable(false);
+        T_endDate->Enable(false);
+        T_startDate->Enable(false);
+        T_manPorc->Enable(false);
+        T_manDate->Enable(false);
+        CB_log->Enable(false);
+        CB_saveImg->Enable(false);
+        RB_incoming->Enable(false);
+        RB_outgoing->Enable(false);
+   
     }
     
 }
 
 void MyFrame::OnCB_saveImgClick(wxCommandEvent& event)
 {
+    
 }
 
 void MyFrame::OnCB_logClick(wxCommandEvent& event)
@@ -290,7 +319,7 @@ void MyFrame::OnB_manEnterClick(wxCommandEvent& event)
 {
 }
 
-void MyFrame::OnT_manQuantityText(wxCommandEvent& event)
+void MyFrame::OnT_manDateText(wxCommandEvent& event)
 {
 }
 
@@ -312,4 +341,16 @@ void MyFrame::OnB_findClick(wxCommandEvent& event)
 
 void MyFrame::OnB_csvClick(wxCommandEvent& event)
 {
+}
+
+void MyFrame::OnTimer1Trigger(wxTimerEvent& event)
+{
+    StaticBitmapIn->SetBitmap(wxBitmap( "../data/lastIn.jpg", wxBITMAP_TYPE_PNG));
+    StaticBitmapOut->SetBitmap(wxBitmap( "../data/lastOut.jpg", wxBITMAP_TYPE_PNG));
+
+    st_dayInQuantity->SetLabel(std::to_string(myResult->dayQuantity(true)));
+    st_dayInPorc->SetLabel(std::to_string(myResult->dayPercentage(true)));
+
+    st_dayOutQuantity->SetLabel(std::to_string(myResult->dayQuantity(false)));
+    st_dayOutPorc->SetLabel(std::to_string(myResult->dayPercentage(false)));
 }
