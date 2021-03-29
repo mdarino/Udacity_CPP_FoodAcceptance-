@@ -25,13 +25,30 @@ template <class T>
 class RecordQueue
 {
 public:
-    T Process();
-    void Store(T &&record);
+    RecordQueue(){};
+    ~RecordQueue(){};
+    T Process()
+    {
+        std::unique_lock<std::mutex> uLock(_mutex);
+        _cond.wait(uLock, [this] { return !_records.empty(); }); // pass unique lock to condition variable
+        T msg = std::move(_records.back());
+        _records.pop_back();
+        return msg;
+    }
+    void Store(T &&record)
+    {
+        std::lock_guard<std::mutex> uLock(_mutex);
+        _records.push_back(std::move(record));
+        _cond.notify_one();
+        std::cout << "Store a new item";
+    }
+    
 private:
     std::mutex _mutex;
     std::condition_variable _cond;
     std::deque<T> _records;
 };
+
 
 /** 
  * @brief PlateDB base class than contains the Attributes witch will be include in the DB
@@ -83,7 +100,7 @@ class ResultDB {
         int requestPercentage(std::string startDate, std::string endDate, unsigned int &in, unsigned int &out);
         int csvFile(std::string startDate, std::string endDate);
 
-        void processRecords(void);
+        void processRecords(std::future<void> futureObj);
     private:
 
         unsigned int quantity_out;  ///< Store the partial day result to avoid ask all the time to the DB - Number of plates outgoing
@@ -91,6 +108,5 @@ class ResultDB {
         unsigned int quantity_in;  ///< Store the partial day result to avoid ask all the time to the DB - Number of plates outgoing
         unsigned int sumPercentage_in; ///< Percentage summation of the day
 };
-
 
 #endif

@@ -7,24 +7,6 @@
 
 #include "db.h"
 
-template <typename T>
-T RecordQueue<T>::Process()
-{
-    std::unique_lock<std::mutex> uLock(_mutex);
-    _cond.wait(uLock, [this] { return !_records.empty(); }); // pass unique lock to condition variable
-    T msg = std::move(_records.back());
-    _records.pop_back();
-    return msg;
-}
-
-template <typename T>
-void RecordQueue<T>::Store(T &&record)
-{
-    std::lock_guard<std::mutex> uLock(_mutex);
-    _records.push_back(std::move(record));
-    _cond.notify_one();
-}
-
 /** 
  * @brief Return the quantity of plates of current day
  * @param inFLag True for incoming plates, False to outgoing
@@ -114,9 +96,12 @@ int ResultDB::csvFile(std::string startDate, std::string endDate){
 }
 
 
-void ResultDB::processRecords(void){
-    //while (1)
+void ResultDB::processRecords(std::future<void> futureObj){
+    
+    while ((futureObj.wait_for(std::chrono::milliseconds(1)) == std::future_status::timeout) )
     {
+      
+      
       std::this_thread::sleep_for(std::chrono::seconds(3));
       std::cout << "My DB";
 

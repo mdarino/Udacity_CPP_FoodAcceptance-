@@ -72,11 +72,11 @@ const long MyFrame::ID_STATICLINE5 = wxNewId();
 Camera myInCamera("LogCamIn.txt", "../log/", true, 0, false);  /* Incoming camara */
 Camera myOutCamera("LogCamOut.txt", "../log/", true, 1, false);  /* Outgoing camara */
 Record myRecord("LogRecord.txt", "../log/", true);
-//ResultDB myResult;
-//std::shared_ptr<ResultDB> myResultPointer;
+
 std::shared_ptr<ResultDB> myResult(new ResultDB);
 std::thread tResults;
-
+std::promise<void> tResultExit;
+std::future<void> tResultFuture;
 
 wxIMPLEMENT_APP(MyApp);  /* MAIN */
 bool MyApp::OnInit()
@@ -95,7 +95,8 @@ bool MyApp::OnInit()
     myInCamera.dPrintObj();
     myOutCamera.dPrintObj();
 
-    tResults = std::thread(&ResultDB::processRecords, myResult); /*STD REF to avoid std::tuple …’ no overloaded function …”.*/
+    tResultFuture = tResultExit.get_future();
+    tResults = std::thread(&ResultDB::processRecords, myResult, std::move(tResultFuture)); /*STD REF to avoid std::tuple …’ no overloaded function …”.*/
     MyFrame *frame = new MyFrame();
     frame->Show(true);
     return true;
@@ -220,6 +221,7 @@ void MyFrame::OnClose(wxCloseEvent& event)
   tIncoming.join();
   tOutgoing.join();
   }
+  tResultExit.set_value();
   tResults.join(); 
   event.Skip(true); 
 }
