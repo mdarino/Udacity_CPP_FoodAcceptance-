@@ -8,6 +8,53 @@
 #include "db.h"
 
 /** 
+ * @brief Result Data Base contructor
+*/
+ResultDB::ResultDB(){
+    quantity_out = 0; 
+    quantity_in = 0;
+    sumPercentage_out = 0;
+    sumPercentage_in = 0;
+
+   char *zErrMsg = 0;
+   int rc;
+
+   /* Open database / Or create it */
+   rc = sqlite3_open("../data/myDB.db", &db);
+   if( rc ) {
+      std::cout << "Can't open database: " << sqlite3_errmsg(db) << std::endl;
+   } else {
+      std::cout << "Open database: " << std::endl;
+   }
+
+   /* Create SQL statement */
+   const char* sql = "CREATE TABLE PLATES(" \
+      "ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," \
+      "NAME TEXT NOT NULL," \
+      "DATE TEXT NOT NULL," \
+      "INFLAG INT NOT NULL," \
+      "PERCENTAGE INT NOT NULL," \
+      "EXPECTED INT NOT NULL," \
+      "MANUAL INT NOT NULL );";
+   /* Execute SQL statement */
+   rc = sqlite3_exec(db, sql, NULL, 0, &zErrMsg);
+   if( rc != SQLITE_OK ) {
+      std::cout << "SQL: " << zErrMsg << std::endl;
+      sqlite3_free(zErrMsg);
+   } else {
+      std::cout << "Table created successfully" << std::endl;
+   }
+
+}
+
+/** 
+ * @brief Result Data Base destructor
+*/
+ResultDB::~ResultDB(){
+    sqlite3_close(db);
+}
+
+/** 
  * @brief Return the quantity of plates of current day
  * @param inFLag True for incoming plates, False to outgoing
  * @return Quantity of plates
@@ -100,10 +147,28 @@ void ResultDB::processRecords(std::future<void> futureObj){
     
     while ((futureObj.wait_for(std::chrono::milliseconds(1)) == std::future_status::timeout) )
     {
-      
-      
-      std::this_thread::sleep_for(std::chrono::seconds(3));
-      std::cout << "My DB";
+        DBNewRecord dataToDB = newDataResult.Process();
+
+        char *zErrMsg = 0;
+        int rc;
+            /* Create SQL statement */
+        std::string sqlCmd = "INSERT INTO PLATES (NAME,DATE,INFLAG,PERCENTAGE,EXPECTED,MANUAL) VALUES ('" + 
+                            dataToDB.plateName + "', '" + dataToDB.date + "', " + 
+                             std::to_string((int)dataToDB.inFLag) + ", " +
+                             std::to_string(dataToDB.percentage)+ ", " +
+                             std::to_string(dataToDB.expPercentage)+ ", " +
+                             std::to_string((int)dataToDB.manualSource)+ ");";
+       
+        /* Execute SQL statement */
+        const char* sql = sqlCmd.c_str();
+        rc = sqlite3_exec(db, sql, NULL, 0, &zErrMsg);
+        if( rc != SQLITE_OK ) {
+            std::cout << "SQL: " << zErrMsg << std::endl;
+            sqlite3_free(zErrMsg);
+        } else {
+            std::cout << "Process DB" << std::endl;
+        }
 
     }
+    std::cout << " END PROCESS RECORDS" << std::endl;
 }

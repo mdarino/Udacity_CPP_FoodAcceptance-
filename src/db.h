@@ -18,7 +18,7 @@
 #include <condition_variable>
 #include <future>
 #include <thread>
-
+#include <sqlite3.h>
 #include "plate.h"
 
 template <class T>
@@ -40,7 +40,7 @@ public:
         std::lock_guard<std::mutex> uLock(_mutex);
         _records.push_back(std::move(record));
         _cond.notify_one();
-        std::cout << "Store a new item";
+        std::cout << "Store DB" << std::endl;
     }
     
 private:
@@ -89,7 +89,8 @@ class DBNewRecord {
 
 class ResultDB {
     public:
-
+        ResultDB();
+        ~ResultDB();
         RecordQueue<DBNewRecord> newDataResult;
         unsigned int dayQuantity(bool inFLag);
         unsigned int dayPercentage(bool inFLag);
@@ -107,6 +108,7 @@ class ResultDB {
         unsigned int sumPercentage_out; ///< Percentage summation of the day
         unsigned int quantity_in;  ///< Store the partial day result to avoid ask all the time to the DB - Number of plates outgoing
         unsigned int sumPercentage_in; ///< Percentage summation of the day
+        sqlite3 *db;
 };
 
 #endif
