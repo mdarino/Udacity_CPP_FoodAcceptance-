@@ -24,13 +24,13 @@ void Camera::processImage(std::future<void> futureObj, std::shared_ptr<ResultDB>
     bool inFlag;
     if (Camera::id == 0)
     {
-        path = "../test/img/";
+        path = "../data/in/";
         outName = "lastIn.jpg";
         inFlag = true;
     }
     else if (Camera::id == 1)
     {
-        path = "../test/img/";
+        path = "../data/out/";
         outName = "lastOut.jpg";
         inFlag = false;
     } 
@@ -38,13 +38,14 @@ void Camera::processImage(std::future<void> futureObj, std::shared_ptr<ResultDB>
 
     while((futureObj.wait_for(std::chrono::milliseconds(1)) == std::future_status::timeout) && (path != ""))
     {
-        int randomNumber;
+        int randomNumber;  /* SIMULATE THE CAMERA WITH FIX IMAGES */
         int randomSleep;
-        randomNumber = (std::rand() % 20) + 1;  /* To get random images */
+        randomNumber = (std::rand() % 40) + 1;  /* To get random images */
         randomSleep = (std::rand() % 7) + 2; 
         std::this_thread::sleep_for(std::chrono::seconds(randomSleep));
 
-        std::string filename = path + std::to_string(randomNumber) + ".jpg";
+        std::string filename = path + std::to_string(randomNumber) + ".png";
+        std::cout << filename;
         Mat img = imread(filename);   /* Mat it is the matrix for the image */
         Mat imgHR, mask, imgGray, imgCircle;
         cvtColor(img, imgHR, COLOR_BGR2HSV); /* Tranform the image to cvtColor */
