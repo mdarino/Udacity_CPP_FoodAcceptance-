@@ -87,9 +87,9 @@ class DBNewRecord {
 };
 
 
-class ResultDB {
+class ResultDB : public Plate {
     public:
-        ResultDB();
+        ResultDB(); /* In future Version must take the plate info from the DB */
         ~ResultDB();
         RecordQueue<DBNewRecord> newDataResult;
         unsigned int dayQuantity(bool inFLag);

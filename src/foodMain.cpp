@@ -72,7 +72,6 @@ const long MyFrame::ID_TIMER1 = wxNewId();
 Camera myInCamera("LogCamIn.txt", "../log/", true, 0, false);  /* Incoming camara */
 Camera myOutCamera("LogCamOut.txt", "../log/", true, 1, false);  /* Outgoing camara */
 Record myRecord("LogRecord.txt", "../log/", true);
-
 std::shared_ptr<ResultDB> myResult(new ResultDB);
 std::thread tResults;
 std::promise<void> tResultExit;
@@ -91,6 +90,9 @@ bool MyApp::OnInit()
         return false; /*Don't lunch the GUI */
     }
     
+    myResult->PlateName("Meat with salad");
+    myResult->ExpPercentage(71);
+
     std::srand((unsigned) time(0));
     myInCamera.dPrintObj();
     myOutCamera.dPrintObj();
@@ -119,7 +121,7 @@ MyFrame::MyFrame()
     Bind(wxEVT_MENU, &MyFrame::OnAbout, this, wxID_ABOUT);
     Bind(wxEVT_MENU, &MyFrame::OnExit, this, wxID_EXIT);
 
-    st_dayFood = new wxStaticText(this, ID_ST_DAYFOOD, _("_____________________"), wxPoint(64,16), wxSize(248,17), 0, _T("ID_ST_DAYFOOD"));
+    st_dayFood = new wxStaticText(this, ID_ST_DAYFOOD, _(myResult->PlateName()), wxPoint(64,16), wxSize(248,17), 0, _T("ID_ST_DAYFOOD"));
     st_currentDate = new wxStaticText(this, ID_ST_CURRENTDATE, _("_____________________"), wxPoint(64,48), wxDefaultSize, 0, _T("ID_ST_CURRENTDATE"));
     StaticText1 = new wxStaticText(this, ID_STATICTEXT2, _("FOOD NAME:"), wxPoint(10,16), wxDefaultSize, 0, _T("ID_STATICTEXT2"));
     wxFont StaticText1Font(10,wxFONTFAMILY_SWISS,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD,false,_T("Sans"),wxFONTENCODING_DEFAULT);

@@ -55,7 +55,6 @@ class Camera : public DebugFood {
         int const vmax = 255;  
 
         void getContours(cv::Mat imgGray, cv::Mat img); 
-
 };
 
 #endif

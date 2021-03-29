@@ -21,6 +21,7 @@ constexpr unsigned int maxNutrients = 1000; ///< Maximum number accepted on Nutr
 class Plate {
     public:
         /* Constructor */
+        Plate() {};
         Plate(std::string uPlateName, unsigned int uExpPercentage, unsigned int uNutrients_A);
         /* Get/Set */  
         std::string PlateName(void) { return plateName;};
