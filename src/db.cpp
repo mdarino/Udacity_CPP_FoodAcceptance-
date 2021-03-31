@@ -152,6 +152,12 @@ void ResultDB::processRecords(std::future<void> futureObj){
     {
         DBNewRecord dataToDB = newDataResult.Process();
 
+        if((dataToDB.plateName == "") && (dataToDB.date == "") && (dataToDB.percentage == 0))/* Check special message to close */
+        {
+            std::cout << "Exit DB - Special Message" << std::endl;
+            break; 
+        }
+
         char *zErrMsg = 0;
         int rc;
         /* Create SQL statement */

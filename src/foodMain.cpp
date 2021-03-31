@@ -221,6 +221,9 @@ void MyFrame::OnClose(wxCloseEvent& event)
         tOutgoing.join();
     }
     tResultExit.set_value();
+    /* Send a special message to request close */
+    DBNewRecord myNewRecord("", "", true, 0, 0, true);
+    auto ftr_store = (std::async(std::launch::async, &RecordQueue<DBNewRecord>::Store, &(myResult->newDataResult), std::move(myNewRecord)));
     tResults.join();
     Timer1.Stop();
     event.Skip(true);
