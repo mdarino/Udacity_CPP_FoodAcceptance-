@@ -152,10 +152,7 @@ class MyFrame : public wxFrame
         void OnB_processClick(wxCommandEvent& event);
         void OnCB_saveImgClick(wxCommandEvent& event);
         void OnCB_logClick(wxCommandEvent& event);
-        void OnRB_outgoingSelect(wxCommandEvent& event);
-        void OnRB_incomingSelect(wxCommandEvent& event);
         void OnB_manEnterClick(wxCommandEvent& event);
-        void OnT_manPorcText(wxCommandEvent& event);
         void OnB_findClick(wxCommandEvent& event);
         void OnB_csvClick(wxCommandEvent& event);
         void OnExit(wxCommandEvent& event);

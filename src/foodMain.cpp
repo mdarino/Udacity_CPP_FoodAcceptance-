@@ -191,13 +191,9 @@ MyFrame::MyFrame()
     DatePickerCtrlSta = new wxDatePickerCtrl(this, ID_DATEPICKERCTRL2, wxDefaultDateTime, wxPoint(120,416), wxDefaultSize, wxDP_DEFAULT|wxDP_SHOWCENTURY, wxDefaultValidator, _T("ID_DATEPICKERCTRL2"));
     DatePickerCtrlEnd = new wxDatePickerCtrl(this, ID_DATEPICKERCTRL3, wxDefaultDateTime, wxPoint(120,456), wxDefaultSize, wxDP_DEFAULT|wxDP_SHOWCENTURY, wxDefaultValidator, _T("ID_DATEPICKERCTRL3"));
 
-
-    Connect(ID_RB_INCOMING,wxEVT_COMMAND_RADIOBUTTON_SELECTED,(wxObjectEventFunction)&MyFrame::OnRB_incomingSelect);
-    Connect(ID_RB_OUTGOING,wxEVT_COMMAND_RADIOBUTTON_SELECTED,(wxObjectEventFunction)&MyFrame::OnRB_outgoingSelect);
     Connect(ID_CB_SAVEIMG,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&MyFrame::OnCB_saveImgClick);
     Connect(ID_CB_LOG,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&MyFrame::OnCB_logClick);
     Connect(ID_B_PROCESS,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&MyFrame::OnB_processClick);
-    Connect(ID_T_MANPORC,wxEVT_COMMAND_TEXT_UPDATED,(wxObjectEventFunction)&MyFrame::OnT_manPorcText);
     Connect(ID_B_FIND,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&MyFrame::OnB_findClick);
     Connect(ID_B_CSV,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&MyFrame::OnB_csvClick);
     Connect(ID_B_MANENTER,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&MyFrame::OnB_manEnterClick);
@@ -328,16 +324,6 @@ void MyFrame::OnCB_logClick(wxCommandEvent& event)
     }
 }
 
-void MyFrame::OnRB_outgoingSelect(wxCommandEvent& event)
-{
-
-}
-
-void MyFrame::OnRB_incomingSelect(wxCommandEvent& event)
-{
-
-}
-
 void MyFrame::OnB_manEnterClick(wxCommandEvent& event)
 {
     unsigned int percentage;
@@ -356,7 +342,7 @@ void MyFrame::OnB_manEnterClick(wxCommandEvent& event)
         if(RB_incoming->GetValue() == true) {inFlagMan = true;}
         wxDateTime dateTime = DatePickerCtrlSta->GetValue();
         // From SQLITE DOC -> DATE format TEXT as ISO8601 strings ("YYYY-MM-DD HH:MM:SS.SSS").
-        std::string date = std::string(dateTime.Format(wxT("%Y-%m-%d %H:%M:%S.000"), wxDateTime::UTC ));
+        std::string date = std::string(dateTime.Format(wxT(DB_DATE_FORMAT), wxDateTime::UTC ));
         DBNewRecord myNewRecord(myResult->PlateName(), date, inFlagMan, percentage, myResult->ExpPercentage(), true);
         auto ftr_store = (std::async(std::launch::async, &RecordQueue<DBNewRecord>::Store, &(myResult->newDataResult), std::move(myNewRecord)));
     }
@@ -364,12 +350,6 @@ void MyFrame::OnB_manEnterClick(wxCommandEvent& event)
     {
         wxMessageBox("INVALID DATA","", wxOK | wxICON_INFORMATION);
     }
-}
-
-
-void MyFrame::OnT_manPorcText(wxCommandEvent& event)
-{
-
 }
 
 void MyFrame::OnB_findClick(wxCommandEvent& event)
@@ -388,6 +368,9 @@ void MyFrame::OnB_findClick(wxCommandEvent& event)
 
 void MyFrame::OnB_csvClick(wxCommandEvent& event)
 {
+
+
+
 
 }
 

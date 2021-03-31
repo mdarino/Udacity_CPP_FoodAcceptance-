@@ -22,6 +22,9 @@
 #include "plate.h"
 #include "debugFood.h"
 
+
+#define DB_DATE_FORMAT "%Y-%m-%d %H:%M:%S.000"
+
 template <class T>
 class RecordQueue
 {
