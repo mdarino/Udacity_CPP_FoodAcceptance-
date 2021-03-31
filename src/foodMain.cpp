@@ -9,7 +9,6 @@
 #include "debugFood.h"
 #include "foodMain.h"
 #include "plate.h"
-#include "records.h"
 #include "camera.h"
 #include "db.h"
 
@@ -70,12 +69,12 @@ const long MyFrame::ID_DATEPICKERCTRL3 = wxNewId();
 
 Camera myInCamera("LogCamIn.txt", "../log/", true, 0, false);  /* Incoming camara */
 Camera myOutCamera("LogCamOut.txt", "../log/", true, 1, false);  /* Outgoing camara */
-Record myRecord("LogRecord.txt", "../log/", true);
 std::shared_ptr<ResultDB> myResult = std::make_shared<ResultDB>("LogDB.txt", "../log/", true);;
 
 std::thread tResults;
 std::promise<void> tResultExit;
 std::future<void> tResultFuture;
+bool myProcessFlag = false;
 
 wxIMPLEMENT_APP(MyApp);  /* MAIN */
 bool MyApp::OnInit()
@@ -213,7 +212,7 @@ void MyFrame::OnClose(wxCloseEvent& event)
 {
     std::cout << "Close OnClose Event" << std::endl;
     
-    if(myRecord.IsRunning())
+    if(myProcessFlag == true)
     {
         exitSignalIn.set_value();
         exitSignalOut.set_value();
@@ -235,7 +234,7 @@ void MyFrame::OnAbout(wxCommandEvent& event)
 void MyFrame::OnB_processClick(wxCommandEvent& event)
 {
     
-    if(myRecord.IsRunning())
+    if(myProcessFlag == true)
     {
         /* TURN OFF */
         SetStatusText("Wait!!!");
@@ -247,7 +246,7 @@ void MyFrame::OnB_processClick(wxCommandEvent& event)
         StaticBitmapOut->SetBitmap(wxBitmap( "../data/start.jpg", wxBITMAP_TYPE_PNG));
         tIncoming.join();
         tOutgoing.join();
-        myRecord.IsRunning(false);
+        myProcessFlag = false;
         exitSignalIn = {}; /* Reset the Promise */
         exitSignalOut = {};
         Timer1.Stop();
@@ -275,7 +274,7 @@ void MyFrame::OnB_processClick(wxCommandEvent& event)
         SetStatusText("Processing a new images!");
         futureObjIn = exitSignalIn.get_future();
         futureObjOut = exitSignalOut.get_future();
-        myRecord.IsRunning(true);
+        myProcessFlag = true;
         Timer1.Start(1000, wxTIMER_CONTINUOUS);
         tIncoming = std::thread(&Camera::processImage, myInCamera, std::move(futureObjIn), myResult);
         tOutgoing = std::thread(&Camera::processImage, myOutCamera, std::move(futureObjOut), myResult);

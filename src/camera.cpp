@@ -45,7 +45,6 @@ void Camera::processImage(std::future<void> futureObj, std::shared_ptr<ResultDB>
         std::this_thread::sleep_for(std::chrono::seconds(randomSleep));
 
         std::string filename = path + std::to_string(randomNumber) + ".png";
-        std::cout << filename;
         Mat img = imread(filename);   /* Mat it is the matrix for the image */
         Mat imgHR, mask, imgGray, imgCircle;
         cvtColor(img, imgHR, COLOR_BGR2HSV); /* Tranform the image to cvtColor */
