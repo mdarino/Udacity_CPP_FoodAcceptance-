@@ -10,25 +10,26 @@
 /** 
  * @brief Result Data Base contructor
 */
-ResultDB::ResultDB(){
+ResultDB::ResultDB(std::string uFile, std::string uPath, bool logStatus): DebugFood(uFile, uPath, logStatus) {
+    
     quantity_out = 0; 
     quantity_in = 0;
     sumPercentage_out = 0;
     sumPercentage_in = 0;
 
-   char *zErrMsg = 0;
-   int rc;
+    char *zErrMsg = 0;
+    int rc;
+ 
+    /* Open database / Or create it */
+    rc = sqlite3_open("../data/myDB.db", &db);
+    if( rc ) {
+       std::cout << "Can't open database: " << sqlite3_errmsg(db) << std::endl;
+    } else {
+       std::cout << "Open database: " << std::endl;
+    }
 
-   /* Open database / Or create it */
-   rc = sqlite3_open("../data/myDB.db", &db);
-   if( rc ) {
-      std::cout << "Can't open database: " << sqlite3_errmsg(db) << std::endl;
-   } else {
-      std::cout << "Open database: " << std::endl;
-   }
-
-   /* Create SQL statement */
-   const char* sql = "CREATE TABLE PLATES(" \
+    /* Create SQL statement */
+    const char* sql = "CREATE TABLE PLATES(" \
       "ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," \
       "NAME TEXT NOT NULL," \
       "DATE TEXT NOT NULL," \
@@ -36,14 +37,14 @@ ResultDB::ResultDB(){
       "PERCENTAGE INT NOT NULL," \
       "EXPECTED INT NOT NULL," \
       "MANUAL INT NOT NULL );";
-   /* Execute SQL statement */
-   rc = sqlite3_exec(db, sql, NULL, 0, &zErrMsg);
-   if( rc != SQLITE_OK ) {
-      std::cout << "SQL: " << zErrMsg << std::endl;
-      sqlite3_free(zErrMsg);
-   } else {
-      std::cout << "Table created successfully" << std::endl;
-   }
+    /* Execute SQL statement */
+    rc = sqlite3_exec(db, sql, NULL, 0, &zErrMsg);
+    if( rc != SQLITE_OK ) {
+        std::cout << "SQL: " << zErrMsg << std::endl;
+        sqlite3_free(zErrMsg);
+    } else {
+        std::cout << "Table created successfully" << std::endl;
+    }
 
 }
 
@@ -172,3 +173,23 @@ void ResultDB::processRecords(std::future<void> futureObj){
     }
     std::cout << " END PROCESS RECORDS" << std::endl;
 }
+
+
+void ResultDB::dPrintObj() {
+    if (ResultDB::LogFlag())
+    {
+        std::ofstream debugFile;
+        debugFile.open (Path() + Filename(), std::ios::app); /* All output operations are performed at the end of the file, Append */
+        if (debugFile.is_open()) {
+            debugFile << "OBJ DB - quantity_out: " << ResultDB::quantity_out << std::endl;
+            debugFile << "OBJ DB - sumPercentage_out: " << ResultDB::sumPercentage_out << std::endl;
+            debugFile << "OBJ DB - quantity_in: " << ResultDB::quantity_in << std::endl;
+            debugFile << "OBJ DB - sumPercentage_in: " << ResultDB::sumPercentage_in << std::endl;
+            debugFile.close();
+        }
+        else
+        {
+            std::cout << "ERROR: Cannot open the log file" << std::endl;
+        }
+    }
+};

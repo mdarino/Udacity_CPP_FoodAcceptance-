@@ -30,7 +30,6 @@ const long MyFrame::ID_CB_SAVEIMG = wxNewId();
 const long MyFrame::ID_CB_LOG = wxNewId();
 const long MyFrame::ID_B_PROCESS = wxNewId();
 const long MyFrame::ID_STATICTEXT5 = wxNewId();
-const long MyFrame::ID_T_MANDATE = wxNewId();
 const long MyFrame::ID_STATICTEXT6 = wxNewId();
 const long MyFrame::ID_T_MANPORC = wxNewId();
 const long MyFrame::ID_STATICLINE2 = wxNewId();
@@ -47,8 +46,6 @@ const long MyFrame::ID_STATICLINE3 = wxNewId();
 const long MyFrame::ID_STATICTEXT16 = wxNewId();
 const long MyFrame::ID_STATICTEXT17 = wxNewId();
 const long MyFrame::ID_STATICTEXT18 = wxNewId();
-const long MyFrame::ID_T_STARTDATE = wxNewId();
-const long MyFrame::ID_T_ENDDATE = wxNewId();
 const long MyFrame::ID_B_FIND = wxNewId();
 const long MyFrame::ID_STATICTEXT19 = wxNewId();
 const long MyFrame::ID_STATICTEXT20 = wxNewId();
@@ -67,12 +64,15 @@ const long MyFrame::ID_STATICBITMAPOUT = wxNewId();
 const long MyFrame::ID_STATICBITMAPIN = wxNewId();
 const long MyFrame::ID_STATICLINE5 = wxNewId();
 const long MyFrame::ID_TIMER1 = wxNewId();
-
+const long MyFrame::ID_DATEPICKERCTRL1 = wxNewId();
+const long MyFrame::ID_DATEPICKERCTRL2 = wxNewId();
+const long MyFrame::ID_DATEPICKERCTRL3 = wxNewId();
 
 Camera myInCamera("LogCamIn.txt", "../log/", true, 0, false);  /* Incoming camara */
 Camera myOutCamera("LogCamOut.txt", "../log/", true, 1, false);  /* Outgoing camara */
 Record myRecord("LogRecord.txt", "../log/", true);
-std::shared_ptr<ResultDB> myResult(new ResultDB);
+std::shared_ptr<ResultDB> myResult = std::make_shared<ResultDB>("LogDB.txt", "../log/", true);;
+
 std::thread tResults;
 std::promise<void> tResultExit;
 std::future<void> tResultFuture;
@@ -96,6 +96,7 @@ bool MyApp::OnInit()
     std::srand((unsigned) time(0));
     myInCamera.dPrintObj();
     myOutCamera.dPrintObj();
+    myResult->dPrintObj();
 
     tResultFuture = tResultExit.get_future();
     tResults = std::thread(&ResultDB::processRecords, myResult, std::move(tResultFuture)); /*STD REF to avoid std::tuple …’ no overloaded function …”.*/
@@ -141,7 +142,6 @@ MyFrame::MyFrame()
     CB_log->SetValue(true);
     B_process = new wxButton(this, ID_B_PROCESS, _("PROCESS"), wxPoint(16,80), wxSize(368,34), 0, wxDefaultValidator, _T("ID_B_PROCESS"));
     StaticText4 = new wxStaticText(this, ID_STATICTEXT5, _("DATE"), wxPoint(16,192), wxDefaultSize, 0, _T("ID_STATICTEXT5"));
-    T_manDate = new wxTextCtrl(this, ID_T_MANDATE, _("mm/dd/yyyy"), wxPoint(80,184), wxSize(108,34), 0, wxDefaultValidator, _T("ID_T_MANDATE"));
     StaticText5 = new wxStaticText(this, ID_STATICTEXT6, _("%"), wxPoint(200,192), wxDefaultSize, 0, _T("ID_STATICTEXT6"));
     T_manPorc = new wxTextCtrl(this, ID_T_MANPORC, _("0"), wxPoint(216,184), wxDefaultSize, 0, wxDefaultValidator, _T("ID_T_MANPORC"));
     StaticLine2 = new wxStaticLine(this, ID_STATICLINE2, wxPoint(0,232), wxSize(400,-1), wxLI_HORIZONTAL, _T("ID_STATICLINE2"));
@@ -162,8 +162,6 @@ MyFrame::MyFrame()
     StaticText15->SetFont(StaticText15Font);
     StaticText16 = new wxStaticText(this, ID_STATICTEXT17, _("START DATE"), wxPoint(24,424), wxDefaultSize, 0, _T("ID_STATICTEXT17"));
     StaticText17 = new wxStaticText(this, ID_STATICTEXT18, _("END DATE"), wxPoint(32,464), wxDefaultSize, 0, _T("ID_STATICTEXT18"));
-    T_startDate = new wxTextCtrl(this, ID_T_STARTDATE, _("mm/dd/yyyy"), wxPoint(112,416), wxSize(104,34), 0, wxDefaultValidator, _T("ID_T_STARTDATE"));
-    T_endDate = new wxTextCtrl(this, ID_T_ENDDATE, _("mm/dd/yyyy"), wxPoint(112,456), wxSize(104,34), 0, wxDefaultValidator, _T("ID_T_ENDDATE"));
     B_find = new wxButton(this, ID_B_FIND, _("FIND"), wxPoint(248,456), wxDefaultSize, 0, wxDefaultValidator, _T("ID_B_FIND"));
     StaticText18 = new wxStaticText(this, ID_STATICTEXT19, _("IN"), wxPoint(24,544), wxDefaultSize, 0, _T("ID_STATICTEXT19"));
     StaticText19 = new wxStaticText(this, ID_STATICTEXT20, _("OUT"), wxPoint(24,584), wxDefaultSize, 0, _T("ID_STATICTEXT20"));
@@ -189,15 +187,17 @@ MyFrame::MyFrame()
     StaticLine5 = new wxStaticLine(this, ID_STATICLINE5, wxPoint(408,0), wxSize(5,800), wxLI_HORIZONTAL, _T("ID_STATICLINE5"));
     Timer1.SetOwner(this, ID_TIMER1);
     
+    DatePickerCtrlMan = new wxDatePickerCtrl(this, ID_DATEPICKERCTRL1, wxDefaultDateTime, wxPoint(64,184), wxDefaultSize, wxDP_DEFAULT|wxDP_SHOWCENTURY, wxDefaultValidator, _T("ID_DATEPICKERCTRL1"));
+    DatePickerCtrlSta = new wxDatePickerCtrl(this, ID_DATEPICKERCTRL2, wxDefaultDateTime, wxPoint(120,416), wxDefaultSize, wxDP_DEFAULT|wxDP_SHOWCENTURY, wxDefaultValidator, _T("ID_DATEPICKERCTRL2"));
+    DatePickerCtrlEnd = new wxDatePickerCtrl(this, ID_DATEPICKERCTRL3, wxDefaultDateTime, wxPoint(120,456), wxDefaultSize, wxDP_DEFAULT|wxDP_SHOWCENTURY, wxDefaultValidator, _T("ID_DATEPICKERCTRL3"));
+
+
     Connect(ID_RB_INCOMING,wxEVT_COMMAND_RADIOBUTTON_SELECTED,(wxObjectEventFunction)&MyFrame::OnRB_incomingSelect);
     Connect(ID_RB_OUTGOING,wxEVT_COMMAND_RADIOBUTTON_SELECTED,(wxObjectEventFunction)&MyFrame::OnRB_outgoingSelect);
     Connect(ID_CB_SAVEIMG,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&MyFrame::OnCB_saveImgClick);
     Connect(ID_CB_LOG,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&MyFrame::OnCB_logClick);
     Connect(ID_B_PROCESS,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&MyFrame::OnB_processClick);
-    Connect(ID_T_MANDATE,wxEVT_COMMAND_TEXT_UPDATED,(wxObjectEventFunction)&MyFrame::OnT_manDateText);
     Connect(ID_T_MANPORC,wxEVT_COMMAND_TEXT_UPDATED,(wxObjectEventFunction)&MyFrame::OnT_manPorcText);
-    Connect(ID_T_STARTDATE,wxEVT_COMMAND_TEXT_UPDATED,(wxObjectEventFunction)&MyFrame::OnT_startDateText);
-    Connect(ID_T_ENDDATE,wxEVT_COMMAND_TEXT_UPDATED,(wxObjectEventFunction)&MyFrame::OnT_endDateText);
     Connect(ID_B_FIND,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&MyFrame::OnB_findClick);
     Connect(ID_B_CSV,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&MyFrame::OnB_csvClick);
     Connect(ID_B_MANENTER,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&MyFrame::OnB_manEnterClick);
@@ -215,20 +215,20 @@ void MyFrame::OnExit(wxCommandEvent& event)
 
 void MyFrame::OnClose(wxCloseEvent& event)
 {
-  std::cout << "Close OnClose Event" << std::endl;
-  
-  if(myRecord.IsRunning())
-  {
-  exitSignalIn.set_value();
-  exitSignalOut.set_value();
-  SetStatusText("Wait!!!");
-  tIncoming.join();
-  tOutgoing.join();
-  }
-  tResultExit.set_value();
-  tResults.join();
-  Timer1.Stop();
-  event.Skip(true);
+    std::cout << "Close OnClose Event" << std::endl;
+    
+    if(myRecord.IsRunning())
+    {
+        exitSignalIn.set_value();
+        exitSignalOut.set_value();
+        SetStatusText("Wait!!!");
+        tIncoming.join();
+        tOutgoing.join();
+    }
+    tResultExit.set_value();
+    tResults.join();
+    Timer1.Stop();
+    event.Skip(true);
 }
 
 void MyFrame::OnAbout(wxCommandEvent& event)
@@ -262,10 +262,10 @@ void MyFrame::OnB_processClick(wxCommandEvent& event)
         B_manEnter->Enable(true);
         B_csv->Enable(true);
         B_find->Enable(true);
-        T_endDate->Enable(true);
-        T_startDate->Enable(true);
+        DatePickerCtrlEnd->Enable(false);
+        DatePickerCtrlSta->Enable(false);
         T_manPorc->Enable(true);
-        T_manDate->Enable(true);
+        DatePickerCtrlMan->Enable(false);
         CB_log->Enable(true);
         CB_saveImg->Enable(true);
         RB_incoming->Enable(true);
@@ -287,10 +287,10 @@ void MyFrame::OnB_processClick(wxCommandEvent& event)
         B_manEnter->Enable(false);
         B_csv->Enable(false);
         B_find->Enable(false);
-        T_endDate->Enable(false);
-        T_startDate->Enable(false);
+        DatePickerCtrlEnd->Enable(false);
+        DatePickerCtrlSta->Enable(false);
         T_manPorc->Enable(false);
-        T_manDate->Enable(false);
+        DatePickerCtrlMan->Enable(false);
         CB_log->Enable(false);
         CB_saveImg->Enable(false);
         RB_incoming->Enable(false);
@@ -302,47 +302,93 @@ void MyFrame::OnB_processClick(wxCommandEvent& event)
 
 void MyFrame::OnCB_saveImgClick(wxCommandEvent& event)
 {
-    
+    if(CB_saveImg->GetValue() == true)
+    {
+        myInCamera.SaveFlag(true);
+        myOutCamera.SaveFlag(true);
+    }
+    else
+    {
+        myInCamera.SaveFlag(false);
+        myOutCamera.SaveFlag(false);
+    }
 }
 
 void MyFrame::OnCB_logClick(wxCommandEvent& event)
 {
+    if(CB_log->GetValue() == true)
+    {
+        myInCamera.SaveFlag(true);
+        myOutCamera.SaveFlag(true);
+    }
+    else
+    {
+        myInCamera.SaveFlag(false);
+        myOutCamera.SaveFlag(false);
+    }
 }
 
 void MyFrame::OnRB_outgoingSelect(wxCommandEvent& event)
 {
+
 }
 
 void MyFrame::OnRB_incomingSelect(wxCommandEvent& event)
 {
+
 }
 
 void MyFrame::OnB_manEnterClick(wxCommandEvent& event)
 {
+    unsigned int percentage;
+    bool dataValid = true;
+    std::string perString = std::string(T_manPorc->GetValue());
+    try {
+      percentage = std::stoi(perString);
+      percentage = myResult->valPercentage(percentage);
+    } catch (const std::invalid_argument& ex) {
+      dataValid = false;
+    }
+    
+    if(dataValid == true)
+    {
+        bool inFlagMan = false;
+        if(RB_incoming->GetValue() == true) {inFlagMan = true;}
+        wxDateTime dateTime = DatePickerCtrlSta->GetValue();
+        // From SQLITE DOC -> DATE format TEXT as ISO8601 strings ("YYYY-MM-DD HH:MM:SS.SSS").
+        std::string date = std::string(dateTime.Format(wxT("%Y-%m-%d %H:%M:%S.000"), wxDateTime::UTC ));
+        DBNewRecord myNewRecord(myResult->PlateName(), date, inFlagMan, percentage, myResult->ExpPercentage(), true);
+        auto ftr_store = (std::async(std::launch::async, &RecordQueue<DBNewRecord>::Store, &(myResult->newDataResult), std::move(myNewRecord)));
+    }
+    else
+    {
+        wxMessageBox("INVALID DATA","", wxOK | wxICON_INFORMATION);
+    }
 }
 
-void MyFrame::OnT_manDateText(wxCommandEvent& event)
-{
-}
 
 void MyFrame::OnT_manPorcText(wxCommandEvent& event)
 {
-}
 
-void MyFrame::OnT_startDateText(wxCommandEvent& event)
-{
-}
-
-void MyFrame::OnT_endDateText(wxCommandEvent& event)
-{
 }
 
 void MyFrame::OnB_findClick(wxCommandEvent& event)
 {
+
+    wxDateTime dateTime = DatePickerCtrlSta->GetValue();
+    //bool isValid = dateTime.IsValid();
+    std::cout <<  dateTime.FormatISODate() << std::endl;
+    dateTime = DatePickerCtrlEnd->GetValue();
+    //bool isValid = dateTime.IsValid();
+    std::cout <<  dateTime.FormatISODate() << std::endl;
+    dateTime = DatePickerCtrlMan->GetValue();
+    //bool isValid = dateTime.IsValid();
+    std::cout <<  dateTime.FormatISODate() << std::endl;
 }
 
 void MyFrame::OnB_csvClick(wxCommandEvent& event)
 {
+
 }
 
 void MyFrame::OnTimer1Trigger(wxTimerEvent& event)

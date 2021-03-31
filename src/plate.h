@@ -33,14 +33,14 @@ class Plate {
         /* Request to the DB the plate name for the current day */
         void RequestPlateName(void);
         
+        /* Function to validate the input values*/
+        unsigned int valPercentage (unsigned int uPercentage); 
+        unsigned int valNutrients (unsigned int uNutrients); 
     private:
         std::string plateName; /* Meals name */
         unsigned int expPercentage; /* Expected result for this plate, 0 to 100 % */
         unsigned int nutrients_A; /* Quantity of vitamim A - unit on milligrams */  /* ...nutrients_A is an example, add more nutrients in this part.. */
 
-        /* Private function to validate the input values*/
-        unsigned int valPercentage (unsigned int uPercentage); 
-        unsigned int valNutrients (unsigned int uNutrients); 
 };
 
 #endif

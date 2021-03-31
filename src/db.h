@@ -20,6 +20,7 @@
 #include <thread>
 #include <sqlite3.h>
 #include "plate.h"
+#include "debugFood.h"
 
 template <class T>
 class RecordQueue
@@ -87,10 +88,11 @@ class DBNewRecord {
 };
 
 
-class ResultDB : public Plate {
+class ResultDB : public Plate,  public DebugFood {
     public:
-        ResultDB(); /* In future Version must take the plate info from the DB */
+        ResultDB(std::string uFile, std::string uPath, bool logStatus);/* In future Version must take the plate info from the DB */
         ~ResultDB();
+        void dPrintObj(); /* Virtual function of the debug class */
         RecordQueue<DBNewRecord> newDataResult;
         unsigned int dayQuantity(bool inFLag);
         unsigned int dayPercentage(bool inFLag);

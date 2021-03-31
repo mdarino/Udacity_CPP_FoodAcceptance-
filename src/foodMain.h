@@ -15,6 +15,8 @@
 #include <wx/button.h>
 #include <wx/checkbox.h>
 #include <wx/frame.h>
+#include <wx/datectrl.h>
+#include <wx/dateevt.h>
 #include <wx/radiobut.h>
 #include <wx/statline.h>
 #include <wx/stattext.h>
@@ -81,11 +83,11 @@ class MyFrame : public wxFrame
         wxStaticText* st_reqInQuantity;
         wxStaticText* st_reqOutPorc;
         wxStaticText* st_reqOutQuantity;
-        wxTextCtrl* T_endDate;
         wxTextCtrl* T_manPorc;
-        wxTextCtrl* T_manDate;
-        wxTextCtrl* T_startDate;
         wxTimer Timer1;
+        wxDatePickerCtrl* DatePickerCtrlEnd;
+        wxDatePickerCtrl* DatePickerCtrlMan;
+        wxDatePickerCtrl* DatePickerCtrlSta;
 
         std::thread tIncoming,tOutgoing;
         std::promise<void> exitSignalIn;
@@ -107,7 +109,6 @@ class MyFrame : public wxFrame
         static const long ID_CB_LOG;
         static const long ID_B_PROCESS;
         static const long ID_STATICTEXT5;
-        static const long ID_T_MANDATE;
         static const long ID_STATICTEXT6;
         static const long ID_T_MANPORC;
         static const long ID_STATICLINE2;
@@ -124,8 +125,6 @@ class MyFrame : public wxFrame
         static const long ID_STATICTEXT16;
         static const long ID_STATICTEXT17;
         static const long ID_STATICTEXT18;
-        static const long ID_T_STARTDATE;
-        static const long ID_T_ENDDATE;
         static const long ID_B_FIND;
         static const long ID_STATICTEXT19;
         static const long ID_STATICTEXT20;
@@ -144,6 +143,9 @@ class MyFrame : public wxFrame
         static const long ID_STATICBITMAPOUT;
         static const long ID_STATICLINE5;
         static const long ID_TIMER1;
+        static const long ID_DATEPICKERCTRL1;
+        static const long ID_DATEPICKERCTRL2;
+        static const long ID_DATEPICKERCTRL3;
     private:
 
         void OnClose(wxCloseEvent& event);
@@ -153,10 +155,7 @@ class MyFrame : public wxFrame
         void OnRB_outgoingSelect(wxCommandEvent& event);
         void OnRB_incomingSelect(wxCommandEvent& event);
         void OnB_manEnterClick(wxCommandEvent& event);
-        void OnT_manDateText(wxCommandEvent& event);
         void OnT_manPorcText(wxCommandEvent& event);
-        void OnT_startDateText(wxCommandEvent& event);
-        void OnT_endDateText(wxCommandEvent& event);
         void OnB_findClick(wxCommandEvent& event);
         void OnB_csvClick(wxCommandEvent& event);
         void OnExit(wxCommandEvent& event);
