@@ -13,10 +13,10 @@
 #include "db.h"
 
 
-// size of chatbot window
+// size of window
 constexpr int width = 1050;
 constexpr int height = 780;
-
+// Get IDs
 const long MyFrame::ID_ST_DAYFOOD = wxNewId();
 const long MyFrame::ID_ST_CURRENTDATE = wxNewId();
 const long MyFrame::ID_STATICTEXT2 = wxNewId();
@@ -69,9 +69,9 @@ const long MyFrame::ID_DATEPICKERCTRL3 = wxNewId();
 
 Camera myInCamera("LogCamIn.txt", "../log/", true, 0, false);  /* Incoming camara */
 Camera myOutCamera("LogCamOut.txt", "../log/", true, 1, false);  /* Outgoing camara */
-std::shared_ptr<ResultDB> myResult = std::make_shared<ResultDB>("LogDB.txt", "../log/", true);;
+std::shared_ptr<ResultDB> myResult = std::make_shared<ResultDB>("LogDB.txt", "../log/", true);; /* DB object */
 
-std::thread tResults;
+std::thread tResults; /* To process the incoming messages */
 std::promise<void> tResultExit;
 std::future<void> tResultFuture;
 bool myProcessFlag = false;
@@ -89,7 +89,7 @@ bool MyApp::OnInit()
         return false; /*Don't lunch the GUI */
     }
     
-    myResult->PlateName("Meat with salad");
+    myResult->PlateName("Meat with salad");  /* First version has fixed the plate */
     myResult->ExpPercentage(71);
 
     std::srand((unsigned) time(0));
@@ -97,8 +97,8 @@ bool MyApp::OnInit()
     myOutCamera.dPrintObj();
     myResult->dPrintObj();
 
-    tResultFuture = tResultExit.get_future();
-    tResults = std::thread(&ResultDB::processRecords, myResult, std::move(tResultFuture)); /*STD REF to avoid std::tuple …’ no overloaded function …”.*/
+    tResultFuture = tResultExit.get_future();  /* Start the process, It ends when the program is closed */
+    tResults = std::thread(&ResultDB::processRecords, myResult, std::move(tResultFuture));
     MyFrame *frame = new MyFrame();
     frame->Show(true);
     return true;
@@ -201,13 +201,20 @@ MyFrame::MyFrame()
 
 }
 
+/** 
+ *  @brief On exit action from the menu
+ *  @param event Incoming event
+*/
 void MyFrame::OnExit(wxCommandEvent& event)
 {
     std::cout << "Close OnExit Event" << std::endl;
     Close(true);
 }
 
-
+/** 
+ *  @brief On exit action from X and after ONExit action
+ *  @param event Incoming event
+*/
 void MyFrame::OnClose(wxCloseEvent& event)
 {
     std::cout << "Close OnClose Event" << std::endl;
@@ -229,11 +236,19 @@ void MyFrame::OnClose(wxCloseEvent& event)
     event.Skip(true);
 }
 
+/** 
+ *  @brief About button
+ *  @param event Incoming event
+*/
 void MyFrame::OnAbout(wxCommandEvent& event)
 {
     wxMessageBox("C++ Capstone Project for the Udacity C++ Nanodegree Program","", wxOK | wxICON_INFORMATION);
 }
 
+/** 
+ *  @brief Process Click button, Started the camera read action or stooped
+ *  @param event Incoming event
+*/
 void MyFrame::OnB_processClick(wxCommandEvent& event)
 {
     
@@ -298,6 +313,10 @@ void MyFrame::OnB_processClick(wxCommandEvent& event)
     
 }
 
+/** 
+ *  @brief Enable save image of the results
+ *  @param event Incoming event
+*/
 void MyFrame::OnCB_saveImgClick(wxCommandEvent& event)
 {
     if(CB_saveImg->GetValue() == true)
@@ -312,6 +331,10 @@ void MyFrame::OnCB_saveImgClick(wxCommandEvent& event)
     }
 }
 
+/** 
+ *  @brief Enable or disable the logs
+ *  @param event Incoming event
+*/
 void MyFrame::OnCB_logClick(wxCommandEvent& event)
 {
     if(CB_log->GetValue() == true)
@@ -326,6 +349,10 @@ void MyFrame::OnCB_logClick(wxCommandEvent& event)
     }
 }
 
+/** 
+ *  @brief Manual DB record
+ *  @param event Incoming event
+*/
 void MyFrame::OnB_manEnterClick(wxCommandEvent& event)
 {
     unsigned int percentage;
@@ -354,6 +381,10 @@ void MyFrame::OnB_manEnterClick(wxCommandEvent& event)
     }
 }
 
+/** 
+ *  @brief Find button, request to the DB information
+ *  @param event Incoming event
+*/
 void MyFrame::OnB_findClick(wxCommandEvent& event)
 {
     wxDateTime dateTimeStart = DatePickerCtrlSta->GetValue();
@@ -367,6 +398,10 @@ void MyFrame::OnB_findClick(wxCommandEvent& event)
 
 }
 
+/** 
+ *  @brief CSV button, request to the DB and save the result in a CSV 
+ *  @param event Incoming event
+*/
 void MyFrame::OnB_csvClick(wxCommandEvent& event)
 {
     wxDateTime dateTimeStart = DatePickerCtrlSta->GetValue();
@@ -374,6 +409,10 @@ void MyFrame::OnB_csvClick(wxCommandEvent& event)
     myResult->csvFile(std::string(dateTimeStart.FormatISODate()), std::string(dateTimeEnd.FormatISODate()));
 }
 
+/** 
+ *  @brief Timer event, Timer to update the screen with the new image and values
+ *  @param event Incoming event
+*/
 void MyFrame::OnTimer1Trigger(wxTimerEvent& event)
 {
     StaticBitmapIn->SetBitmap(wxBitmap( "../data/lastIn.jpg", wxBITMAP_TYPE_PNG));

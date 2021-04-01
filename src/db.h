@@ -23,13 +23,15 @@
 #include "debugFood.h"
 
 
-#define DB_DATE_FORMAT "%Y-%m-%d %H:%M:%S.000"
-#define DB_CSV_FILE "../data/myRecords.csv"
+#define DB_DATE_FORMAT "%Y-%m-%d %H:%M:%S.000" /* DB format for the date */
+#define DB_CSV_FILE "../data/myRecords.csv" /* File name and Path for the CSV file */
 
 enum DB_RECORD { ID = 0, NAME, DATE, INFLAG, PERCENTAGE, EXPECTED, MANUAL };
 enum DB_READ_TYPE { FIND = 0, CSV};
 
-
+/** 
+ * @brief Generic class to receive Records to the DB
+*/
 template <class T>
 class RecordQueue
 {
@@ -87,15 +89,17 @@ class DBNewRecord {
     private:    
         friend class ResultDB; /* Give access to private members */
 
-        std::string plateName;
-        std::string date;
-        bool inFLag;
+        std::string plateName;  /* Name of the plate which was process */
+        std::string date; /* Date when the plate is process */
+        bool inFLag; ///< True if the plate is incoming (kitchen to diner)
         unsigned int percentage;
-        unsigned int expPercentage;
-        bool manualSource;
+        unsigned int expPercentage; ///< Expected percentage of the incoming plates
+        bool manualSource; ///< True the record is set manually
 };
 
-
+/** 
+ * @brief ResultDB Store all the result or method to access to this values.
+*/
 class ResultDB : public Plate,  public DebugFood {
     public:
         ResultDB(std::string uFile, std::string uPath, bool logStatus);/* In future Version must take the plate info from the DB */
@@ -107,7 +111,7 @@ class ResultDB : public Plate,  public DebugFood {
         void addOnePlate(bool inFLag);
         void addOnePercentage(bool inFLag, unsigned int percentage);
 
-        void requestUpdate(std::string startDate, std::string endDate);
+        void requestUpdate(std::string startDate, std::string endDate); 
         void csvFile(std::string startDate, std::string endDate);
         unsigned int findQuantity(bool inFLag);
         unsigned int findPercentage(bool inFLag);

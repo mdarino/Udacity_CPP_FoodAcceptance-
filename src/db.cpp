@@ -7,19 +7,20 @@
 
 #include "db.h"
 
+/* Local Variables to store the partial result for the find action */
+static unsigned int findQuaOut;  
+static unsigned int findSumPerOut; 
+static unsigned int findQuaIn;  
+static unsigned int findSumPerIn; 
+/* CSV stream, local to the file. */
+static std::ofstream csvFileFd; 
 
-static unsigned int findQuaOut;  ///< Store the partial day result to avoid ask all the time to the DB - Number of plates outgoing
-static unsigned int findSumPerOut; ///< Percentage summation of the day
-static unsigned int findQuaIn;  ///< Store the partial day result to avoid ask all the time to the DB - Number of plates outgoing
-static unsigned int findSumPerIn; ///< Percentage summation of the day
-static std::ofstream csvFileFd;
-
+/* CallBack of the sqlite to process the read data */
 int callbackUpdate(void *data, int argc, char **argv, char **azColName);
 int callbackCsv(void *data, int argc, char **argv, char **azColName);
 
-
 /** 
- * @brief Result Data Base contructor
+ * @brief ResultDB Data Base constructor
 */
 ResultDB::ResultDB(std::string uFile, std::string uPath, bool logStatus): DebugFood(uFile, uPath, logStatus) {
     
@@ -35,6 +36,7 @@ ResultDB::ResultDB(std::string uFile, std::string uPath, bool logStatus): DebugF
     rc = sqlite3_open("../data/myDB.db", &db);
     if( rc ) {
        std::cout << "Can't open database: " << sqlite3_errmsg(db) << std::endl;
+       dPrint("DB", "Can't open database" + std::string(sqlite3_errmsg(db)));
     } else {
        std::cout << "Open database: " << std::endl;
     }
@@ -52,6 +54,7 @@ ResultDB::ResultDB(std::string uFile, std::string uPath, bool logStatus): DebugF
     rc = sqlite3_exec(db, sql, NULL, 0, &zErrMsg);
     if( rc != SQLITE_OK ) {
         std::cout << "SQL: " << zErrMsg << std::endl;
+        dPrint("DB", "SQL:" + std::string(zErrMsg));
         sqlite3_free(zErrMsg);
     } else {
         std::cout << "Table created successfully" << std::endl;
@@ -60,7 +63,7 @@ ResultDB::ResultDB(std::string uFile, std::string uPath, bool logStatus): DebugF
 }
 
 /** 
- * @brief Result Data Base destructor
+ * @brief ResultDB Data Base destructor
 */
 ResultDB::~ResultDB(){
     sqlite3_close(db);
@@ -183,6 +186,10 @@ unsigned int ResultDB::findPercentage(bool inFLag){
     return 0;
 }
 
+/** 
+ * @brief This function is the process to get information from the queue
+ * @param futureObj It is used to close the while(1) loop
+*/
 void ResultDB::processRecords(std::future<void> futureObj){
     
     while ((futureObj.wait_for(std::chrono::milliseconds(1)) == std::future_status::timeout) )
@@ -217,7 +224,9 @@ void ResultDB::processRecords(std::future<void> futureObj){
     std::cout << " END PROCESS RECORDS" << std::endl;
 }
 
-
+/** 
+ * @brief Debug function to print the DB information
+*/
 void ResultDB::dPrintObj() {
     if (ResultDB::LogFlag())
     {
@@ -237,7 +246,12 @@ void ResultDB::dPrintObj() {
     }
 };
 
-
+/** 
+ * @brief Read action. Get info from the DB and the data is process in the callback
+ * @param type. Action type, check DB_READ_TYPE
+ * @param startDate Start date to filter the DB
+ * @param endDate End date to filter the DB
+*/
 void ResultDB::readDB(DB_READ_TYPE type, std::string startDate, std::string endDate){
     char *zErrMsg = 0;
     int rc;
@@ -253,13 +267,17 @@ void ResultDB::readDB(DB_READ_TYPE type, std::string startDate, std::string endD
 
     if( rc != SQLITE_OK ) {
         std::cout << "SQL: " << zErrMsg << std::endl;
+        dPrint("DB", "SQL:" + std::string(zErrMsg));
         sqlite3_free(zErrMsg);
     } else {
         std::cout << "DB - READ OK" << std::endl;
     }
 }
 
-
+/** 
+ * @brief Callback to process the read information. This callback is called
+*         to store the percentage sum and the quantity of plates
+*/
 int callbackUpdate(void *data, int argc, char **argv, char **azColName){
     int percentage = std::stoi(argv[DB_RECORD::PERCENTAGE]);
     if (std::string(argv[DB_RECORD::INFLAG]) == "1")
@@ -276,7 +294,10 @@ int callbackUpdate(void *data, int argc, char **argv, char **azColName){
     return 0;
 }
 
-
+/** 
+ * @brief Callback to process the read information. This callback is called
+*         to store create the CSV file info
+*/
 int callbackCsv(void *data, int argc, char **argv, char **azColName){
 
     csvFileFd << argv[DB_RECORD::ID] << ",";

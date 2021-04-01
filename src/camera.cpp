@@ -7,16 +7,15 @@
 
 #include "camera.h"
 
-/** 
- * @brief Run one image processing
- * @param None
- * @return None
-*/
-
 using namespace cv;
-
 RNG rng(12345);
 
+/** 
+ * @brief Run one image processing
+ * @param futureObj To close the while(1)
+ * @param record Object to store the process information
+ * @return None
+*/
 void Camera::processImage(std::future<void> futureObj, std::shared_ptr<ResultDB> record){
 
     std::string outName = "";
@@ -35,6 +34,7 @@ void Camera::processImage(std::future<void> futureObj, std::shared_ptr<ResultDB>
         inFlag = false;
     } 
     std::cout << " START CAMERA" << Camera::id << std::endl;
+    dPrint("CAMERA", "START" + std::to_string(Camera::id));
 
     while((futureObj.wait_for(std::chrono::milliseconds(1)) == std::future_status::timeout) && (path != ""))
     {
@@ -78,8 +78,6 @@ void Camera::processImage(std::future<void> futureObj, std::shared_ptr<ResultDB>
         filename = "../data/" + outName;
         imwrite(filename, res);
 
-
-
         /* Store in the DB */
         time_t     now = time(0);
         char       buf[80];
@@ -91,6 +89,7 @@ void Camera::processImage(std::future<void> futureObj, std::shared_ptr<ResultDB>
         record->addOnePlate(inFlag);
         record->addOnePercentage(inFlag, percentageResult);
 
+        dPrint("CAMERA", std::to_string(Camera::id) + "-" + std::to_string(percentageResult));
         if(saveFlag == true)
         {
             std::cout << Camera::id << ": " << randomNumber << " P:" << percentageResult << std::endl;
@@ -102,6 +101,9 @@ void Camera::processImage(std::future<void> futureObj, std::shared_ptr<ResultDB>
     std::cout << " END CAMERA" << Camera::id << std::endl;
 }
 
+/** 
+ * @brief Print the Camera object information in the log file
+*/
 void Camera::dPrintObj() {
     if (Camera::LogFlag())
     {
@@ -125,7 +127,9 @@ void Camera::dPrintObj() {
     }
 };
 
-
+/** 
+ * @brief Local function to find the circle of the plate
+*/
 void Camera::getContours(Mat imgGray, Mat img) {
 
     Mat imgGaussian, imgCanny, imgDil;
@@ -162,6 +166,7 @@ void Camera::getContours(Mat imgGray, Mat img) {
            - The idea is log this problem and in future version find a way to get a better result */
         cv::Point2f pt(595, 563); /* Center point */
         circle(img, pt, 540, color, FILLED ); /* A circle */
+        dPrint("CAMERA", "NOT FIND THE PLATE");
     }
 
 }
