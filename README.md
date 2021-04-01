@@ -6,8 +6,8 @@ This repo contains My C++ Capstone Project for the Object Oriented Programming C
 The food acceptance project is created to control how much food is accepted in meals preparation. It is focused mainly on places where we can find one plate for the day, for example in my country (Argentina) it is very common at community kitchens, companies, schools cafeteria, etc. The main idea is to avoid throwing food and get statistics of food acceptance.
 Another important motivation for this software is to find what food is not accepted and find other ways of preparing this meals in a way that covers all the nutrients needed for children/adults.
 
-<p align="center"><img src="softwareFrontEnd.jpg" width="600" height="800" /> </p>
-(The previous Image is not the final result. Design proposal)
+<p align="center"><img src="softwareFrontEnd.gif" width="600" height="800" /> </p>
+
 
 Please for more information check the below items where you can find the code design, tests, and rubric items description.
 
@@ -41,7 +41,6 @@ Please for more information check the below items where you can find the code de
 3. Compile: `cmake .. && make`
 4. Run it: `./food`
 
-
 ## Design
 The following design will cover the main ideas and code functionality. This design was made at the beginning of the project, because of that you may find some small differences with the final implementation.
 
@@ -61,10 +60,12 @@ The data thread is blocked until receiving new data to store in the database. Th
 
 The code will have the following classes where will be covering most part of the information and actions.
 
+
 <p align="center"> <img src="d3.png" width="400" height="400" /> </p>
 
 ## Testing
-The repo will have images in the test folder to check the code operations. The first version only uses those images, not support the live camera but the tester can change those images to testing.
+The repo will have images in the data folder to check the code operations. The first version only uses those images, not support the live camera but the tester can change those images to testing.
+In the repository is store a DB with information to check the operation of find and csv.
 
 ## Rubric Points
 
@@ -73,13 +74,13 @@ All Points are completed on this document.
 **Compiling and testing**
 The project compiles and runs without errors/warning. The project uses CMake and make.
 **Loops, Functions, I/O**
-TODO
+In the Data base object is one example where find this Rubric Points.
 **Object Oriented Programming**
-TODO
+The final project has Plate, Debug, DB, Camera objects.
 **Memory Management**
-TODO
+The Camera process store the object result in the DB.
 **Concurrency**
-TODO
+The Camera open one thread to process the incoming images and one to outgoing images.
 
 ## Improvements
 
@@ -88,3 +89,4 @@ TODO
  - Support different menus on the same day (Restaurants)
  - Identify the food
  - Calculation of nutrient
+ - Selftest only check the debug and plate classes. Add test for the others classes.

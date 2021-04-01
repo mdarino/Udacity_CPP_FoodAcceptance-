@@ -275,10 +275,10 @@ void MyFrame::OnB_processClick(wxCommandEvent& event)
         B_manEnter->Enable(true);
         B_csv->Enable(true);
         B_find->Enable(true);
-        DatePickerCtrlEnd->Enable(false);
-        DatePickerCtrlSta->Enable(false);
+        DatePickerCtrlEnd->Enable(true);
+        DatePickerCtrlSta->Enable(true);
         T_manPorc->Enable(true);
-        DatePickerCtrlMan->Enable(false);
+        DatePickerCtrlMan->Enable(true);
         CB_log->Enable(true);
         CB_saveImg->Enable(true);
         RB_incoming->Enable(true);

@@ -284,7 +284,6 @@ int callbackUpdate(void *data, int argc, char **argv, char **azColName){
     {
         findQuaIn++;
         findSumPerIn += percentage;
-        std::cout << "POR" << findSumPerIn << std::endl;
     }
     else
     {
