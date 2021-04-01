@@ -6,7 +6,7 @@ This repo contains My C++ Capstone Project for the Object Oriented Programming C
 The food acceptance project is created to control how much food is accepted in meals preparation. It is focused mainly on places where we can find one plate for the day, for example in my country (Argentina) it is very common at community kitchens, companies, schools cafeteria, etc. The main idea is to avoid throwing food and get statistics of food acceptance.
 Another important motivation for this software is to find what food is not accepted and find other ways of preparing this meals in a way that covers all the nutrients needed for children/adults.
 
-<p align="center"><img src="softwareFrontEnd.gif" width="600" height="800" /> </p>
+<p align="center"><img src="softwareFrontEnd.gif" width="800" height="700" /> </p>
 
 
 Please for more information check the below items where you can find the code design, tests, and rubric items description.
@@ -57,11 +57,6 @@ To process the image the idea is to filter by the plate color and then calculate
 IMPORTANT: For the first version the code will use a static image located in the test folder.
 
 The data thread is blocked until receiving new data to store in the database. This thread will have a message queue implementation.
-
-The code will have the following classes where will be covering most part of the information and actions.
-
-
-<p align="center"> <img src="d3.png" width="400" height="400" /> </p>
 
 ## Testing
 The repo will have images in the data folder to check the code operations. The first version only uses those images, not support the live camera but the tester can change those images to testing.
