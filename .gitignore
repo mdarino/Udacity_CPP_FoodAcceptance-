@@ -6,3 +6,5 @@ build/*
 *.json
 *.code-workspace
 log/*
+data/myRecords.csv
+data/saveFlag/*

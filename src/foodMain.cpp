@@ -356,24 +356,22 @@ void MyFrame::OnB_manEnterClick(wxCommandEvent& event)
 
 void MyFrame::OnB_findClick(wxCommandEvent& event)
 {
+    wxDateTime dateTimeStart = DatePickerCtrlSta->GetValue();
+    wxDateTime dateTimeEnd = DatePickerCtrlEnd->GetValue();
+    myResult->requestUpdate(std::string(dateTimeStart.FormatISODate()), std::string(dateTimeEnd.FormatISODate()));
 
-    wxDateTime dateTime = DatePickerCtrlSta->GetValue();
-    //bool isValid = dateTime.IsValid();
-    std::cout <<  dateTime.FormatISODate() << std::endl;
-    dateTime = DatePickerCtrlEnd->GetValue();
-    //bool isValid = dateTime.IsValid();
-    std::cout <<  dateTime.FormatISODate() << std::endl;
-    dateTime = DatePickerCtrlMan->GetValue();
-    //bool isValid = dateTime.IsValid();
-    std::cout <<  dateTime.FormatISODate() << std::endl;
+    st_reqInQuantity->SetLabel(std::to_string(myResult->findQuantity(true)));
+    st_reqInPorc->SetLabel(std::to_string(myResult->findPercentage(true)));
+    st_reqOutQuantity->SetLabel(std::to_string(myResult->findQuantity(false)));
+    st_reqOutPorc->SetLabel(std::to_string(myResult->findPercentage(false)));
+
 }
 
 void MyFrame::OnB_csvClick(wxCommandEvent& event)
 {
-
-
-
-
+    wxDateTime dateTimeStart = DatePickerCtrlSta->GetValue();
+    wxDateTime dateTimeEnd = DatePickerCtrlEnd->GetValue();
+    myResult->csvFile(std::string(dateTimeStart.FormatISODate()), std::string(dateTimeEnd.FormatISODate()));
 }
 
 void MyFrame::OnTimer1Trigger(wxTimerEvent& event)

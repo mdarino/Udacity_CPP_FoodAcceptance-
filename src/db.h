@@ -24,6 +24,11 @@
 
 
 #define DB_DATE_FORMAT "%Y-%m-%d %H:%M:%S.000"
+#define DB_CSV_FILE "../data/myRecords.csv"
+
+enum DB_RECORD { ID = 0, NAME, DATE, INFLAG, PERCENTAGE, EXPECTED, MANUAL };
+enum DB_READ_TYPE { FIND = 0, CSV};
+
 
 template <class T>
 class RecordQueue
@@ -102,18 +107,21 @@ class ResultDB : public Plate,  public DebugFood {
         void addOnePlate(bool inFLag);
         void addOnePercentage(bool inFLag, unsigned int percentage);
 
-        int requestQuantity(std::string startDate, std::string endDate, unsigned int &in, unsigned int &out);
-        int requestPercentage(std::string startDate, std::string endDate, unsigned int &in, unsigned int &out);
-        int csvFile(std::string startDate, std::string endDate);
-
+        void requestUpdate(std::string startDate, std::string endDate);
+        void csvFile(std::string startDate, std::string endDate);
+        unsigned int findQuantity(bool inFLag);
+        unsigned int findPercentage(bool inFLag);
         void processRecords(std::future<void> futureObj);
-    private:
 
-        unsigned int quantity_out;  ///< Store the partial day result to avoid ask all the time to the DB - Number of plates outgoing
-        unsigned int sumPercentage_out; ///< Percentage summation of the day
-        unsigned int quantity_in;  ///< Store the partial day result to avoid ask all the time to the DB - Number of plates outgoing
-        unsigned int sumPercentage_in; ///< Percentage summation of the day
+    private:
+        unsigned int quantityOut;  ///< Store the partial day result to avoid ask all the time to the DB - Number of plates outgoing
+        unsigned int sumPercentageOut; ///< Percentage summation of the day
+        unsigned int quantityIn;  ///< Store the partial day result to avoid ask all the time to the DB - Number of plates outgoing
+        unsigned int sumPercentageIn; ///< Percentage summation of the day
+
         sqlite3 *db;
+        void readDB(DB_READ_TYPE type, std::string startDate, std::string endDate);
+
 };
 
 #endif

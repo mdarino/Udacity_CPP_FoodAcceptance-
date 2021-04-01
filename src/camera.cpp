@@ -78,6 +78,8 @@ void Camera::processImage(std::future<void> futureObj, std::shared_ptr<ResultDB>
         filename = "../data/" + outName;
         imwrite(filename, res);
 
+
+
         /* Store in the DB */
         time_t     now = time(0);
         char       buf[80];
@@ -88,6 +90,13 @@ void Camera::processImage(std::future<void> futureObj, std::shared_ptr<ResultDB>
         ftr_store.wait(); /* Wait the store  */
         record->addOnePlate(inFlag);
         record->addOnePercentage(inFlag, percentageResult);
+
+        if(saveFlag == true)
+        {
+            std::cout << Camera::id << ": " << randomNumber << " P:" << percentageResult << std::endl;
+            filename = "../data/saveFlag/" + std::string(buf) + ".jpg";
+            imwrite(filename, res); 
+        }
 
     }
     std::cout << " END CAMERA" << Camera::id << std::endl;

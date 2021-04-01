@@ -7,15 +7,26 @@
 
 #include "db.h"
 
+
+static unsigned int findQuaOut;  ///< Store the partial day result to avoid ask all the time to the DB - Number of plates outgoing
+static unsigned int findSumPerOut; ///< Percentage summation of the day
+static unsigned int findQuaIn;  ///< Store the partial day result to avoid ask all the time to the DB - Number of plates outgoing
+static unsigned int findSumPerIn; ///< Percentage summation of the day
+static std::ofstream csvFileFd;
+
+int callbackUpdate(void *data, int argc, char **argv, char **azColName);
+int callbackCsv(void *data, int argc, char **argv, char **azColName);
+
+
 /** 
  * @brief Result Data Base contructor
 */
 ResultDB::ResultDB(std::string uFile, std::string uPath, bool logStatus): DebugFood(uFile, uPath, logStatus) {
     
-    quantity_out = 0; 
-    quantity_in = 0;
-    sumPercentage_out = 0;
-    sumPercentage_in = 0;
+    quantityOut = 0; 
+    quantityIn = 0;
+    sumPercentageOut = 0;
+    sumPercentageIn = 0;
 
     char *zErrMsg = 0;
     int rc;
@@ -62,10 +73,10 @@ ResultDB::~ResultDB(){
 */
 unsigned int ResultDB::dayQuantity(bool inFLag){
     if(inFLag){
-        return quantity_in;
+        return quantityIn;
     }
     else{
-        return quantity_out;
+        return quantityOut;
     }
 }
 
@@ -76,12 +87,12 @@ unsigned int ResultDB::dayQuantity(bool inFLag){
 */
 unsigned int ResultDB::dayPercentage(bool inFLag){
     if(inFLag){
-        if (quantity_in > 0)
-            return (unsigned int)(sumPercentage_in/quantity_in);
+        if (quantityIn > 0)
+            return (unsigned int)(sumPercentageIn/quantityIn);
     }
     else{
-        if (quantity_out > 0)
-            return (unsigned int)(sumPercentage_out/quantity_out);
+        if (quantityOut > 0)
+            return (unsigned int)(sumPercentageOut/quantityOut);
     }
     return 0;
 }
@@ -92,10 +103,10 @@ unsigned int ResultDB::dayPercentage(bool inFLag){
 */
 void ResultDB::addOnePlate(bool inFLag){
     if(inFLag){
-        quantity_in++;
+        quantityIn++;
     }
     else{
-        quantity_out++;
+        quantityOut++;
     }
 }
 
@@ -105,35 +116,11 @@ void ResultDB::addOnePlate(bool inFLag){
 */
 void ResultDB::addOnePercentage(bool inFLag, unsigned int percentage){
     if(inFLag){
-        sumPercentage_in += percentage;
+        sumPercentageIn += percentage;
     }
     else{
-        sumPercentage_out += percentage;
+        sumPercentageOut += percentage;
     }
-}
-
-/** 
- * @brief Request the quantity of a period of time (Incoming and outgoing)
- * @param startDate Start date to filter the DB
- * @param endDate End date to filter the DB
- * @param in Reference variable to return the incoming quantity
- * @param out Reference variable to return the outgoing quantity
-*/
-int ResultDB::requestQuantity(std::string startDate, std::string endDate, unsigned int &in, unsigned int &out){
-    //TODO//
-    return 1;
-}
-
-/** 
- * @brief Request the percentage of a period of time (Incoming and outgoing)
- * @param startDate Start date to filter the DB
- * @param endDate End date to filter the DB
- * @param in Reference variable to return the incoming percentage
- * @param out Reference variable to return the outgoing percentage
-*/
-int ResultDB::requestPercentage(std::string startDate, std::string endDate, unsigned int &in, unsigned int &out){
-    //TODO//
-    return 1;
 }
 
 /** 
@@ -141,9 +128,59 @@ int ResultDB::requestPercentage(std::string startDate, std::string endDate, unsi
  * @param startDate Start date to filter the DB
  * @param endDate End date to filter the DB
 */
-int ResultDB::csvFile(std::string startDate, std::string endDate){
-    //TODO//
-    return 1;
+void ResultDB::requestUpdate(std::string startDate, std::string endDate){
+    findQuaOut = 0;
+    findSumPerOut = 0;
+    findQuaIn = 0;
+    findSumPerIn = 0;
+    std::cout << "FIND: " << startDate << " to " << endDate << " (Not inclusive)" << std::endl;
+    ResultDB::readDB(DB_READ_TYPE::FIND, startDate, endDate);
+}
+
+/** 
+ * @brief Request the quantity and the percentage of a period of time
+ * @param startDate Start date to filter the DB
+ * @param endDate End date to filter the DB
+*/
+void ResultDB::csvFile(std::string startDate, std::string endDate){
+    std::cout << "CSV: " << startDate << " to " << endDate << " (Not inclusive)" << std::endl;
+    
+    csvFileFd.open (DB_CSV_FILE);
+    if (csvFileFd.is_open()) {
+        ResultDB::readDB(DB_READ_TYPE::CSV, startDate, endDate);
+        csvFileFd.close();
+    }
+}
+
+/** 
+ * @brief Return the quantity of plates for the find request
+ * @param inFLag True for incoming plates, False to outgoing
+ * @return Quantity of plates
+*/
+unsigned int ResultDB::findQuantity(bool inFLag){
+    if(inFLag){
+        return findQuaIn;
+    }
+    else{
+        return findQuaOut;
+    }
+}
+
+/** 
+ * @brief Return the percentage for the find request
+ * @param inFLag True for incoming plates, False to outgoing
+ * @return Percentage
+*/
+unsigned int ResultDB::findPercentage(bool inFLag){
+    if(inFLag){
+        if (findQuaIn > 0)
+            return (unsigned int)(findSumPerIn/findQuaIn);
+    }
+    else{
+        if (findQuaOut > 0)
+            return (unsigned int)(findSumPerOut/findQuaOut);
+    }
+    return 0;
 }
 
 void ResultDB::processRecords(std::future<void> futureObj){
@@ -187,10 +224,10 @@ void ResultDB::dPrintObj() {
         std::ofstream debugFile;
         debugFile.open (Path() + Filename(), std::ios::app); /* All output operations are performed at the end of the file, Append */
         if (debugFile.is_open()) {
-            debugFile << "OBJ DB - quantity_out: " << ResultDB::quantity_out << std::endl;
-            debugFile << "OBJ DB - sumPercentage_out: " << ResultDB::sumPercentage_out << std::endl;
-            debugFile << "OBJ DB - quantity_in: " << ResultDB::quantity_in << std::endl;
-            debugFile << "OBJ DB - sumPercentage_in: " << ResultDB::sumPercentage_in << std::endl;
+            debugFile << "OBJ DB - quantity_out: " << ResultDB::quantityOut << std::endl;
+            debugFile << "OBJ DB - sumPercentage_out: " << ResultDB::sumPercentageOut << std::endl;
+            debugFile << "OBJ DB - quantity_in: " << ResultDB::quantityIn << std::endl;
+            debugFile << "OBJ DB - sumPercentage_in: " << ResultDB::sumPercentageIn << std::endl;
             debugFile.close();
         }
         else
@@ -199,3 +236,58 @@ void ResultDB::dPrintObj() {
         }
     }
 };
+
+
+void ResultDB::readDB(DB_READ_TYPE type, std::string startDate, std::string endDate){
+    char *zErrMsg = 0;
+    int rc;
+     /* Create SQL statement */
+    std::string sqlCmd = "SELECT * from PLATES Where DATE BETWEEN date('" + 
+                        startDate + "') AND date('" + endDate + "')";    
+    const char* data = ""; 
+    /* Execute SQL statement */
+    if(type == DB_READ_TYPE::FIND)
+        rc = sqlite3_exec(db, sqlCmd.c_str(), callbackUpdate, (void*)data, &zErrMsg);
+    if(type == DB_READ_TYPE::CSV) 
+       rc = sqlite3_exec(db, sqlCmd.c_str(), callbackCsv, (void*)data, &zErrMsg);
+
+    if( rc != SQLITE_OK ) {
+        std::cout << "SQL: " << zErrMsg << std::endl;
+        sqlite3_free(zErrMsg);
+    } else {
+        std::cout << "DB - READ OK" << std::endl;
+    }
+}
+
+
+int callbackUpdate(void *data, int argc, char **argv, char **azColName){
+    int percentage = std::stoi(argv[DB_RECORD::PERCENTAGE]);
+    if (std::string(argv[DB_RECORD::INFLAG]) == "1")
+    {
+        findQuaIn++;
+        findSumPerIn += percentage;
+        std::cout << "POR" << findSumPerIn << std::endl;
+    }
+    else
+    {
+        findQuaOut ++;
+        findSumPerOut += percentage;
+    }
+    return 0;
+}
+
+
+int callbackCsv(void *data, int argc, char **argv, char **azColName){
+
+    csvFileFd << argv[DB_RECORD::ID] << ",";
+    csvFileFd << argv[DB_RECORD::NAME] << ",";
+    csvFileFd << argv[DB_RECORD::DATE] << ",";
+    csvFileFd << argv[DB_RECORD::INFLAG] << ",";
+    csvFileFd << argv[DB_RECORD::PERCENTAGE] << ",";
+    csvFileFd << argv[DB_RECORD::EXPECTED] << ",";
+    csvFileFd << argv[DB_RECORD::MANUAL];
+    csvFileFd << std::endl;
+    return 0;
+}
+
+
