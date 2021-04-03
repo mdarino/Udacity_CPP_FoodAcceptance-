@@ -122,8 +122,14 @@ MyFrame::MyFrame()
     Bind(wxEVT_MENU, &MyFrame::OnExit, this, wxID_EXIT);
 
     st_dayFood = new wxStaticText(this, ID_ST_DAYFOOD, _(myResult->PlateName()), wxPoint(64,16), wxSize(248,17), 0, _T("ID_ST_DAYFOOD"));
-    st_currentDate = new wxStaticText(this, ID_ST_CURRENTDATE, _("_____________________"), wxPoint(64,48), wxDefaultSize, 0, _T("ID_ST_CURRENTDATE"));
-    StaticText1 = new wxStaticText(this, ID_STATICTEXT2, _("FOOD NAME:"), wxPoint(10,16), wxDefaultSize, 0, _T("ID_STATICTEXT2"));
+    
+    /* Store in the DB */
+    time_t     now = time(0);
+    char       buf[80];
+    strftime(buf, sizeof(buf), "%Y-%m-%d", localtime(&now));
+    st_currentDate = new wxStaticText(this, ID_ST_CURRENTDATE, _(buf), wxPoint(64,48), wxDefaultSize, 0, _T("ID_ST_CURRENTDATE"));
+   
+    StaticText1 = new wxStaticText(this, ID_STATICTEXT2, _("FOOD:"), wxPoint(10,16), wxDefaultSize, 0, _T("ID_STATICTEXT2"));
     wxFont StaticText1Font(10,wxFONTFAMILY_SWISS,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD,false,_T("Sans"),wxFONTENCODING_DEFAULT);
     StaticText1->SetFont(StaticText1Font);
     StaticText2 = new wxStaticText(this, ID_STATICTEXT3, _("DATE"), wxPoint(10,48), wxDefaultSize, 0, _T("ID_STATICTEXT3"));
@@ -369,7 +375,7 @@ void MyFrame::OnB_manEnterClick(wxCommandEvent& event)
     {
         bool inFlagMan = false;
         if(RB_incoming->GetValue() == true) {inFlagMan = true;}
-        wxDateTime dateTime = DatePickerCtrlSta->GetValue();
+        wxDateTime dateTime = DatePickerCtrlMan->GetValue();
         // From SQLITE DOC -> DATE format TEXT as ISO8601 strings ("YYYY-MM-DD HH:MM:SS.SSS").
         std::string date = std::string(dateTime.Format(wxT(DB_DATE_FORMAT), wxDateTime::UTC ));
         DBNewRecord myNewRecord(myResult->PlateName(), date, inFlagMan, percentage, myResult->ExpPercentage(), true);
