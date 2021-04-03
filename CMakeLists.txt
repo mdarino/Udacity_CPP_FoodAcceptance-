@@ -4,6 +4,7 @@ cmake_minimum_required(VERSION 3.11.3)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -std=c++17 -pthread -lsqlite3 ")
 
 find_package(wxWidgets REQUIRED COMPONENTS core base)
+find_package(wxWidgets COMPONENTS core base adv REQUIRED)
 find_package(OpenCV 4.1 REQUIRED)
 
 include(${wxWidgets_USE_FILE})
