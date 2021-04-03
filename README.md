@@ -73,7 +73,7 @@ Please for more information check the below items where you can find the code de
 
 3. Compile: `cmake .. && make`
 
-4. Run it: `./food`
+4. Run it: `./foodAcceptance`
 
   
 ## Design
@@ -105,7 +105,7 @@ IMPORTANT: For the first version the code will use a static image located in the
 
 The data thread is blocked until receiving new data to store in the database. This thread will have a message queue implementation.
 
-<p  align="center"><img  src="Final3.jpg"  width="900"  height="700"  />  </p>
+<p  align="center"><img  src="Final3.jpg"  width="600"  height="500"  />  </p>
 
   
 
