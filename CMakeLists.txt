@@ -19,9 +19,9 @@ file(GLOB project_SRCS src/*.cpp) #src/*.h
 # Add project executable
 add_executable(foodAcceptance ${project_SRCS})
 
-find_package (SQLite3)
-include_directories(${SQLite3_INCLUDE_DIRS})
-target_link_libraries (foodAcceptance ${SQLite3_LIBRARIES})
+include_directories(/usr/include)
+link_directories(/usr/lib)
+target_link_libraries(foodAcceptance sqlite3)
 
 target_link_libraries(foodAcceptance ${OpenCV_LIBRARIES})
 target_link_libraries(foodAcceptance ${wxWidgets_LIBRARIES})
