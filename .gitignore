@@ -10,3 +10,4 @@ data/myRecords.csv
 data/saveFlag/*
 # exception to the rule (Keep the folder)
 !log/.gitkeep 
+!data/saveFlag/.gitkeep 

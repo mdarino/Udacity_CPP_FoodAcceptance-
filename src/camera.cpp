@@ -166,7 +166,6 @@ void Camera::getContours(Mat imgGray, Mat img) {
            - The idea is log this problem and in future version find a way to get a better result */
         cv::Point2f pt(595, 563); /* Center point */
         circle(img, pt, 540, color, FILLED ); /* A circle */
-        dPrint("CAMERA", "NOT FIND THE PLATE");
     }
 
 }
